@@ -1,7 +1,9 @@
 package com.streamwave.radio.ui.player
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,9 +14,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -163,35 +169,71 @@ fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewMode
     }
 }
 
-// === Grotere audio visualizer ===
+// === Meerdere visualizer stijlen ===
 @Composable
 fun LargeVisualizer(isPlaying: Boolean) {
-    val barCount = 32
-    Row(
-        modifier = Modifier.fillMaxWidth().height(48.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        for (i in 0 until barCount) {
-            val transition = rememberInfiniteTransition(label = "v$i")
-            val height by transition.animateFloat(
-                initialValue = 0.1f, targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(300 + i * 80, easing = FastOutSlowInEasing),
-                    repeatMode = RepeatMode.Reverse
-                ), label = "h$i"
-            )
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(if (isPlaying) height else 0.08f)
-                    .clip(RoundedCornerShape(1.dp))
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Purple, Pink, Cyan)
-                        )
-                    )
-            )
+    var style by remember { mutableIntStateOf(0) }
+    val styles = 4
+
+    Box(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { style = (style + 1) % styles },
+        contentAlignment = Alignment.Center) {
+        when (style) {
+            0 -> BarVisualizer(isPlaying, 32)
+            1 -> CircleVisualizer(isPlaying)
+            2 -> WaveVisualizer(isPlaying)
+            else -> DotVisualizer(isPlaying)
+        }
+    }
+}
+
+@Composable
+private fun BarVisualizer(isPlaying: Boolean, count: Int = 32) {
+    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically) {
+        for (i in 0 until count) {
+            val t = rememberInfiniteTransition(label = "bv$i")
+            val h by t.animateFloat(0.08f, 1f, infiniteRepeatable(tween(300 + i * 80, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "h")
+            Box(Modifier.weight(1f).fillMaxHeight(if (isPlaying) h else 0.08f).clip(RoundedCornerShape(1.dp)).background(Brush.verticalGradient(listOf(Purple, Pink, Cyan))))
+        }
+    }
+}
+
+@Composable
+private fun CircleVisualizer(isPlaying: Boolean) {
+    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+        for (i in 0 until 8) {
+            val t = rememberInfiniteTransition(label = "cv$i")
+            val s by t.animateFloat(0.3f, 1f, infiniteRepeatable(tween(400 + i * 120, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "s")
+            Box(Modifier.size((20 + i * 4).dp).scale(if (isPlaying) s else 0.3f).clip(CircleShape).background(Brush.horizontalGradient(listOf(Purple, Cyan))))
+        }
+    }
+}
+
+@Composable
+private fun WaveVisualizer(isPlaying: Boolean) {
+    val t = rememberInfiniteTransition(label = "wv")
+    val offset by t.animateFloat(0f, 1f, infiniteRepeatable(tween(1500, easing = LinearEasing), RepeatMode.Restart), label = "o")
+    Canvas(Modifier.fillMaxSize()) {
+        val w = size.width
+        val h = size.height
+        val amp = if (isPlaying) h * 0.4f else h * 0.05f
+        val path = androidx.compose.ui.graphics.Path()
+        path.moveTo(0f, h / 2)
+        for (x in 0..w.toInt() step 4) {
+            val y = h / 2 + amp * kotlin.math.sin((x / w * 4 * Math.PI + offset * 2 * Math.PI).toFloat())
+            path.lineTo(x.toFloat(), y)
+        }
+        drawPath(path, color = Purple, style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f))
+        drawPath(path, color = Cyan, style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5f), alpha = 0.5f)
+    }
+}
+
+@Composable
+private fun DotVisualizer(isPlaying: Boolean) {
+    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+        for (i in 0 until 16) {
+            val t = rememberInfiniteTransition(label = "dv$i")
+            val a by t.animateFloat(0.2f, 1f, infiniteRepeatable(tween(250 + i * 100, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "a")
+            Box(Modifier.size(8.dp).alpha(if (isPlaying) a else 0.2f).clip(CircleShape).background(if (i % 2 == 0) Purple else Pink))
         }
     }
 }
