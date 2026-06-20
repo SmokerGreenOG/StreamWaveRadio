@@ -76,6 +76,8 @@ fun SplashScreen(onFinished: () -> Unit) {
             Text("StreamWave Radio", color = PrimaryText, fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.alpha(alpha.value))
             Spacer(Modifier.height(4.dp))
             Text("Your radio, your stream", color = Purple, fontSize = 14.sp, modifier = Modifier.alpha(alpha.value))
+            Spacer(Modifier.height(24.dp))
+            Text("Powered by Futuristic Creations", color = SecondaryText, fontSize = 11.sp, modifier = Modifier.alpha(alpha.value))
         }
     }
 }
