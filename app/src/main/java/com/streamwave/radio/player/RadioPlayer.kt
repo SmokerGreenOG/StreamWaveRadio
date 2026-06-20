@@ -31,7 +31,8 @@ data class PlayerState(
 
 @Singleton
 class RadioPlayer @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    val sleepTimerManager: SleepTimerManager
 ) {
     private val exoPlayer: ExoPlayer = ExoPlayer.Builder(context)
         .setMediaSourceFactory(DefaultMediaSourceFactory(context))

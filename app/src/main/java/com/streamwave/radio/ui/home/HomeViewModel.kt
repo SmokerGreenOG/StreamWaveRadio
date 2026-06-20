@@ -29,6 +29,11 @@ class HomeViewModel @Inject constructor(
     private val _featuredStations = MutableStateFlow<List<OfficialStationEntity>>(emptyList())
     val featuredStations: StateFlow<List<OfficialStationEntity>> = _featuredStations.asStateFlow()
 
+    private val _showSleepTimer = MutableStateFlow(false)
+    val showSleepTimer: StateFlow<Boolean> = _showSleepTimer.asStateFlow()
+
+    fun setShowSleepTimer(show: Boolean) { _showSleepTimer.value = show }
+
     init {
         // Laad stations direct bij opstarten
         viewModelScope.launch {

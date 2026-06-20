@@ -28,6 +28,7 @@ import com.streamwave.radio.core.theme.*
 import com.streamwave.radio.player.PlayingState
 import com.streamwave.radio.ui.components.*
 import com.streamwave.radio.ui.player.MiniPlayer
+import com.streamwave.radio.ui.player.SleepTimerDialogFull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +41,7 @@ fun HomeScreen(
     val stations by viewModel.officialStations.collectAsState()
     val featured by viewModel.featuredStations.collectAsState()
     val playerState by viewModel.radioPlayer.playerState.collectAsState()
+    val showSleepTimer by viewModel.showSleepTimer.collectAsState()
 
     Scaffold(
         containerColor = Background,
@@ -152,6 +154,11 @@ fun HomeScreen(
                                 IconButton(onClick = onOpenFullPlayer) {
                                     Icon(Icons.Default.OpenInFull, "Volledige speler", tint = SecondaryText, modifier = Modifier.size(20.dp))
                                 }
+
+                                // Slaaptimer
+                                IconButton(onClick = { viewModel.setShowSleepTimer(true) }) {
+                                    Icon(Icons.Filled.Bedtime, "Slaaptimer", tint = Cyan, modifier = Modifier.size(20.dp))
+                                }
                             }
                         }
                     }
@@ -189,6 +196,14 @@ fun HomeScreen(
 
             item { Spacer(Modifier.height(80.dp)) }
         }
+    }
+
+    if (showSleepTimer) {
+        SleepTimerDialogFull(
+            sleepTimerManager = viewModel.radioPlayer.sleepTimerManager,
+            onDismiss = { viewModel.setShowSleepTimer(false) },
+            onStop = { viewModel.radioPlayer.stop() }
+        )
     }
 }
 

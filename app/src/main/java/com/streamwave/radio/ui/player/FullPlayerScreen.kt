@@ -152,20 +152,10 @@ fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewMode
         }
 
         if (showSleepTimer) {
-            AlertDialog(
-                onDismissRequest = { showSleepTimer = false },
-                containerColor = Panel,
-                title = { Text("Slaaptimer", color = PrimaryText) },
-                text = {
-                    Column {
-                        listOf(10, 20, 30, 45, 60, 90).forEach { mins ->
-                            TextButton(onClick = { showSleepTimer = false }, modifier = Modifier.fillMaxWidth()) {
-                                Text("$mins minuten", color = PrimaryText, fontSize = 16.sp)
-                            }
-                        }
-                    }
-                },
-                confirmButton = { TextButton(onClick = { showSleepTimer = false }) { Text("Annuleren", color = SecondaryText) } }
+            SleepTimerDialogFull(
+                sleepTimerManager = viewModel.radioPlayer.sleepTimerManager,
+                onDismiss = { showSleepTimer = false },
+                onStop = { viewModel.radioPlayer.stop() }
             )
         }
     }
