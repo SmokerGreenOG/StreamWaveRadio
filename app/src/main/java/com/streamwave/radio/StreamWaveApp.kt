@@ -1,6 +1,7 @@
 package com.streamwave.radio
 
 import android.app.Application
+import com.streamwave.radio.core.localization.LanguageManager
 import com.streamwave.radio.data.database.AppDatabase
 import com.streamwave.radio.data.database.entity.CategoryEntity
 import com.streamwave.radio.data.database.entity.OfficialStationEntity
@@ -15,9 +16,12 @@ import javax.inject.Inject
 class StreamWaveApp : Application() {
 
     @Inject lateinit var db: AppDatabase
+    @Inject lateinit var languageManager: LanguageManager
 
     override fun onCreate() {
         super.onCreate()
+        // Pas opgeslagen taal toe bij opstarten
+        languageManager.applySavedLanguage()
         CoroutineScope(Dispatchers.IO).launch {
             prepopulateIfNeeded()
         }

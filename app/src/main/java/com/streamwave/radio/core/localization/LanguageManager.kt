@@ -1,8 +1,8 @@
 package com.streamwave.radio.core.localization
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
-import androidx.core.os.LocaleListCompat
 import com.streamwave.radio.data.datastore.SettingsDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
@@ -24,17 +24,30 @@ class LanguageManager @Inject constructor(
         const val LANG_SYSTEM = "system"
 
         val SUPPORTED_LANGUAGES = listOf(
-            Locale(LANG_NL),
-            Locale(LANG_EN),
-            Locale(LANG_DE),
-            Locale(LANG_ES)
+            Locale(LANG_NL), Locale(LANG_EN), Locale(LANG_DE), Locale(LANG_ES)
         )
+
+        fun applyLocale(context: Context, language: String): Context {
+            val locale = when (language) {
+                LANG_NL -> Locale(LANG_NL)
+                LANG_DE -> Locale(LANG_DE)
+                LANG_ES -> Locale(LANG_ES)
+                else -> Locale(LANG_EN)
+            }
+            Locale.setDefault(locale)
+            val config = Configuration(context.resources.configuration)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                config.setLocale(locale)
+            } else {
+                @Suppress("DEPRECATION")
+                config.locale = locale
+            }
+            return context.createConfigurationContext(config)
+        }
     }
 
     fun getCurrentLanguage(): String {
-        return runBlocking {
-            settingsDataStore.language.first()
-        }
+        return runBlocking { settingsDataStore.language.first() }
     }
 
     fun detectDeviceLanguage(): String {
@@ -44,34 +57,21 @@ class LanguageManager @Inject constructor(
             @Suppress("DEPRECATION")
             context.resources.configuration.locale
         }
-
         val deviceLang = deviceLocale.language
-        return if (SUPPORTED_LANGUAGES.any { it.language == deviceLang }) {
-            deviceLang
-        } else {
-            LANG_EN // fallback
-        }
+        return if (SUPPORTED_LANGUAGES.any { it.language == deviceLang }) deviceLang else LANG_EN
     }
 
     fun getInitialLanguage(): String {
         val saved = getCurrentLanguage()
-        return if (saved == LANG_SYSTEM) {
-            detectDeviceLanguage()
-        } else {
-            saved
-        }
+        return if (saved == LANG_SYSTEM) detectDeviceLanguage() else saved
     }
 
     suspend fun setLanguage(language: String) {
         settingsDataStore.setLanguage(language)
     }
 
-    fun getLocaleForLanguage(language: String): Locale {
-        return when (language) {
-            LANG_NL -> Locale(LANG_NL)
-            LANG_DE -> Locale(LANG_DE)
-            LANG_ES -> Locale(LANG_ES)
-            else -> Locale(LANG_EN)
-        }
+    fun applySavedLanguage() {
+        val lang = getInitialLanguage()
+        applyLocale(context, lang)
     }
 }
