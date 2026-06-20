@@ -86,18 +86,12 @@ fun SettingsScreen(
                     Column {
                         listOf("nl" to R.string.language_nl, "en" to R.string.language_en, "de" to R.string.language_de, "es" to R.string.language_es).forEach { (code, labelRes) ->
                             TextButton(onClick = {
-                                // Direct toepassen (statische cache)
-                                LanguageManager.applyLocale(context.applicationContext, code)
-                                // Async opslaan in DataStore
+                                // Sla op in DataStore
                                 val app = context.applicationContext as com.streamwave.radio.StreamWaveApp
                                 kotlinx.coroutines.runBlocking { app.languageManager.setLanguage(code) }
+                                // Herstart activity met nieuwe locale
                                 showLanguagePicker = false
-                                // Herstart
-                                val i = Intent(context, MainActivity::class.java).apply {
-                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                }
-                                context.startActivity(i)
-                                (context as? Activity)?.finish()
+                                (context as? Activity)?.recreate()
                             }, modifier = Modifier.fillMaxWidth()) {
                                 Text(stringResource(labelRes), color = PrimaryText, fontSize = 16.sp)
                             }

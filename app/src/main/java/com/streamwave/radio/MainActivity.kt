@@ -1,16 +1,17 @@
 package com.streamwave.radio
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.streamwave.radio.core.localization.LanguageManager
 import com.streamwave.radio.core.theme.StreamWaveTheme
 import com.streamwave.radio.ui.admin.AdminScreen
 import com.streamwave.radio.ui.favorites.FavoritesScreen
@@ -20,6 +21,7 @@ import com.streamwave.radio.ui.personal.MyStationsScreen
 import com.streamwave.radio.ui.player.FullPlayerScreen
 import com.streamwave.radio.ui.settings.SettingsScreen
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 object NavRoutes {
     const val HOME = "home"
@@ -33,6 +35,16 @@ object NavRoutes {
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject lateinit var languageManager: LanguageManager
+
+    override fun attachBaseContext(newBase: Context) {
+        val lang = try {
+            (newBase.applicationContext as StreamWaveApp).languageManager.getInitialLanguage()
+        } catch (e: Exception) { "en" }
+        super.attachBaseContext(LanguageManager.wrapContextWithLocale(newBase, LanguageManager.getLocaleForCode(lang)))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
