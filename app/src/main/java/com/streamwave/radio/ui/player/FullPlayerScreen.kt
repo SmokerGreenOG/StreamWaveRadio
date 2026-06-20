@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import com.streamwave.radio.ui.home.HomeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewModel()) {
+    val ctx = LocalContext.current
     val state by viewModel.radioPlayer.playerState.collectAsState()
     var showSleepTimer by remember { mutableStateOf(false) }
 
@@ -147,13 +149,23 @@ fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewMode
 
             // Extra knoppen
             Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                IconButton(onClick = {}) {
-                    Icon(Icons.Default.FavoriteBorder, stringResource(R.string.favorite), tint = Pink, modifier = Modifier.size(28.dp))
+                // Favoriet — zelfde logica als HomeScreen
+                val isFav by viewModel.isFavorite.collectAsState()
+                IconButton(onClick = { viewModel.toggleFavorite() }) {
+                    Icon(if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        stringResource(R.string.favorite), tint = if (isFav) Pink else SecondaryText, modifier = Modifier.size(28.dp))
                 }
                 IconButton(onClick = { showSleepTimer = true }) {
                     Icon(Icons.Filled.Bedtime, stringResource(R.string.sleep_timer), tint = Cyan, modifier = Modifier.size(28.dp))
                 }
-                IconButton(onClick = {}) {
+                // Share
+                IconButton(onClick = {
+                    val share = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(android.content.Intent.EXTRA_TEXT, "🎵 ${state.stationName}\n📻 ${state.streamUrl}\n\nLuister via StreamWave Radio!")
+                    }
+                    ctx.startActivity(android.content.Intent.createChooser(share, stringResource(R.string.share)))
+                }) {
                     Icon(Icons.Default.Share, stringResource(R.string.share), tint = SecondaryText, modifier = Modifier.size(28.dp))
                 }
             }

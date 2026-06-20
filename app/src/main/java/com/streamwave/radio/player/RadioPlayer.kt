@@ -18,6 +18,7 @@ enum class PlayingState { IDLE, BUFFERING, PLAYING, PAUSED, ERROR }
 data class PlayerState(
     val state: PlayingState = PlayingState.IDLE,
     val stationName: String = "",
+    val streamUrl: String = "",
     val stationLogo: String = "",
     val artist: String = "",
     val title: String = "",
@@ -89,6 +90,7 @@ class RadioPlayer @Inject constructor(
         retryCount = 0
         _playerState.value = _playerState.value.copy(
             stationName = stationName,
+            streamUrl = streamUrl,
             stationLogo = stationLogo,
             artist = "",
             title = "",
