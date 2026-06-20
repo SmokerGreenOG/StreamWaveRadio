@@ -132,4 +132,13 @@ Geen hardcoded stations in de APK — altijd up-to-date!
 
 ## 📄 License
 
-MIT License — zie [LICENSE](LICENSE)
+**Custom License** — Copyright (c) 2026 SmokerGreenOG. All rights reserved.
+
+- ✅ Personal, non-commercial use allowed
+- ❌ No modification, redistribution, or commercial use
+- ❌ No reverse engineering
+- ❌ No use of branding without permission
+
+Zie [LICENSE](LICENSE) voor de volledige voorwaarden.
+
+Voor commerciële rechten: neem contact op met SmokerGreenOG.
