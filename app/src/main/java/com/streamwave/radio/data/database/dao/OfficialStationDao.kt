@@ -51,4 +51,13 @@ interface OfficialStationDao {
 
     @Query("UPDATE official_stations SET streamStatus = :status, lastCheckedAt = :checkedAt WHERE id = :id")
     suspend fun updateStreamStatus(id: Long, status: String, checkedAt: Long)
+
+    @Query("SELECT COALESCE(MAX(id), 0) FROM official_stations")
+    fun getMaxId(): Flow<Long>
+
+    @Query("SELECT * FROM official_stations WHERE streamUrl = :url LIMIT 1")
+    fun getByUrl(url: String): Flow<OfficialStationEntity?>
+
+    @Query("SELECT * FROM official_stations LIMIT :limit")
+    suspend fun getAny(limit: Int = 1): List<OfficialStationEntity>
 }

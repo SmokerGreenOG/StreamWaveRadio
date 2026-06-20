@@ -3,8 +3,7 @@ package com.streamwave.radio.sync
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.*
-import com.streamwave.radio.data.repository.StationRepository
-import com.streamwave.radio.network.api.StationApiService
+import com.streamwave.radio.data.repository.RadioBrowserRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
@@ -13,28 +12,20 @@ import java.util.concurrent.TimeUnit
 class SyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val stationRepository: StationRepository,
-    private val stationApiService: StationApiService
+    private val radioBrowserRepository: RadioBrowserRepository
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
         return try {
-            val response = stationApiService.getAllStations()
-            if (response.isSuccessful) {
-                val stations = response.body() ?: emptyList()
-                stations.forEach { stationRepository.insertOfficial(it) }
-                Result.success()
-            } else {
-                Result.retry()
-            }
+            radioBrowserRepository.refreshStations(listOf("NL", "BE", "DE", "US"))
+            Result.success()
         } catch (e: Exception) {
-            if (runAttemptCount < 3) Result.retry()
-            else Result.failure()
+            Result.retry()
         }
     }
 
     companion object {
-        private const val WORK_NAME = "station_sync"
+        private const val WORK_NAME = "streamwave_radio_sync"
 
         fun schedule(context: Context) {
             val constraints = Constraints.Builder()
@@ -43,7 +34,7 @@ class SyncWorker @AssistedInject constructor(
 
             val request = PeriodicWorkRequestBuilder<SyncWorker>(6, TimeUnit.HOURS)
                 .setConstraints(constraints)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
                 .build()
 
             WorkManager.getInstance(context)
