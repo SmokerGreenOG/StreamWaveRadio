@@ -75,8 +75,8 @@ class HomeViewModel @Inject constructor(
     fun toggleFavorite() {
         val stationId = _currentStationId.value ?: return
         viewModelScope.launch {
-            favoriteRepository.toggle("OFFICIAL", stationId)
-            _isFavorite.value = !_isFavorite.value
+            val isNowFav = favoriteRepository.toggle("OFFICIAL", stationId)
+            _isFavorite.value = isNowFav
         }
     }
 

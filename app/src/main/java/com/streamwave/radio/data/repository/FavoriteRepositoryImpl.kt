@@ -20,20 +20,15 @@ class FavoriteRepositoryImpl @Inject constructor(
     override suspend fun isFavorite(type: String, stationId: Long): Boolean =
         favoriteDao.isFavorite(type, stationId)
 
-    override suspend fun toggle(type: String, stationId: Long) {
-        if (favoriteDao.isFavorite(type, stationId)) {
+    override suspend fun toggle(type: String, stationId: Long): Boolean {
+        return if (favoriteDao.isFavorite(type, stationId)) {
             favoriteDao.delete(type, stationId)
+            false  // nu verwijderd
         } else {
-            val count = favoriteDao.getAll()
-            // count is a Flow — we need a different approach for sortOrder
-            val order = 0 // simplified
             favoriteDao.insert(
-                FavoriteEntity(
-                    stationType = type,
-                    stationId = stationId,
-                    sortOrder = order
-                )
+                FavoriteEntity(stationType = type, stationId = stationId, sortOrder = 0)
             )
+            true  // nu favoriet
         }
     }
 
