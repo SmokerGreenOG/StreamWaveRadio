@@ -3,7 +3,7 @@ package com.streamwave.radio.core.common
 object Constants {
     const val APP_NAME = "StreamWave Radio"
     const val MAKER = "SmokerGreenOG"
-    const val VERSION = "1.0.0"
+    const val VERSION = "1.1.0"
 
     // DataStore
     const val PREF_NAME = "streamwave_settings"

@@ -3,7 +3,7 @@
 > Een moderne Android radio-app met donker futuristisch design — Kotlin + Jetpack Compose.
 > **Gemaakt door SmokerGreenOG** | Powered by [Futuristic Creations](https://futuristiccreations.nl/)
 
-**Status:** ✅ Complete — v1.0 release
+**Status:** ✅ Complete — v1.1 release
 
 ---
 
