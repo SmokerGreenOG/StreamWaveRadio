@@ -1,23 +1,30 @@
 # 🎵 StreamWave Radio
 
-> A modern Android radio app with dark futuristic design — built with Kotlin + Jetpack Compose.
+> Een moderne Android radio-app met donker futuristisch design — Kotlin + Jetpack Compose.
+> **Gemaakt door SmokerGreenOG** | Powered by [Futuristic Creations](https://futuristiccreations.nl/)
 
-**Status:** 🚧 In development (Fase 0/12 voltooid)
+**Status:** ✅ Complete — v1.0 release
 
 ---
 
-## 📋 Features (planned)
+## 📋 Features
 
-- 🎧 **Official Stations** — Curated by admin, visible to all users
-- 🔒 **Personal Stations** — User-added private stations
-- 🌐 **Multi-language** — NL 🇳🇱 / EN 🇬🇧 / DE 🇩🇪 / ES 🇪🇸
-- 🎨 **Dark Futuristic Design** — #140b24 backgrounds, purple neon accents
-- 📻 **Media3 ExoPlayer** — MP3, AAC, HLS, Icecast, Shoutcast support
-- 💤 **Sleep Timer** — Custom countdown with fade-out
-- ⭐ **Favorites** — Reorder, quick play
-- 🔍 **Search & Filters** — Category, country, language
-- 📱 **Background Audio** — Foreground service + media notification
-- 🛡️ **Admin Panel** — Station CRUD, stream testing, submission review
+| Feature | Status |
+|---------|--------|
+| 📻 **Radio Browser API** — 1000+ live stations (NL/DE/US/BE) | ✅ |
+| 🌐 **4 talen** — NL 🇳🇱 / EN 🇬🇧 / DE 🇩🇪 / ES 🇪🇸 | ✅ |
+| 🎨 **5 thema's** — Paars/Blauw/Groen/Rood/Oranje (donker) | ✅ |
+| 🔊 **Volume boost** — 0–200% met slider | ✅ |
+| ⏰ **Slaaptimer** — 10 minuten tot 12 uur | ✅ |
+| ❤️ **Favorieten** — Toggle + lijstweergave | ✅ |
+| ➕ **Persoonlijke stations** — Eigen links toevoegen + stream test | ✅ |
+| 🔍 **Zoeken & filters** — Naam, categorie, land, taal | ✅ |
+| 📊 **4 visualizer stijlen** — Bars, cirkels, golf, stippen | ✅ |
+| 🚀 **Splash screen** — Logo animatie | ✅ |
+| 📱 **Background audio** — Foreground service + media notificatie | ✅ |
+| 🛡️ **Admin paneel** — Station beheer | ✅ |
+| 🔄 **Auto-sync** — Elke 6 uur verse stations via WorkManager | ✅ |
+| ✨ **Reclame popup** — Subtiel na 60s → futuristiccreations.nl | ✅ |
 
 ---
 
@@ -32,70 +39,97 @@
 | Hilt | 2.51.1 |
 | Room | 2.6.1 |
 | Media3 / ExoPlayer | 1.4.1 |
-| Retrofit | 2.11.0 |
+| Retrofit + Gson | 2.11.0 |
 | Coil | 2.6.0 |
-| minSdk | 28 (Android 9+) |
-| compileSdk | 35 |
+| DataStore | 1.1.1 |
+| WorkManager | 2.9.0 |
+| **minSdk** | **28 (Android 9+)** |
+| **compileSdk** | **35** |
 
----
+## 🚀 Build & Install
 
-## 🚀 Build & Run
-
-### Prerequisites
-- **JDK 17** (Temurin recommended)
-- **Android SDK** (API 35, build-tools 36.x+)
-- **Gradle 8.9** (wrapper included)
-
-### Setup
-
+### Zelf bouwen
 ```bash
-# Clone
 git clone https://github.com/SmokerGreenOG/StreamWaveRadio.git
 cd StreamWaveRadio
-
-# Set environment
 export JAVA_HOME="/path/to/jdk-17"
 export ANDROID_HOME="$HOME/AppData/Local/Android/Sdk"
-
-# Build
-./gradlew assembleDebug
-
-# APK location
-# app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleRelease
+# APK: app/build/outputs/apk/release/app-release.apk (~5 MB)
 ```
+
+### Direct installeren
+Download de laatste APK van de [releases](https://github.com/SmokerGreenOG/StreamWaveRadio/releases) of vraag hem aan SmokerGreenOG.
 
 ---
 
-## 📂 Project Structure
+## 📂 Structuur
 
 ```
 app/src/main/java/com/streamwave/radio/
-├── StreamWaveApp.kt          # @HiltAndroidApp
-├── MainActivity.kt           # @AndroidEntryPoint, Compose
+├── StreamWaveApp.kt              # @HiltAndroidApp + API-load
+├── MainActivity.kt               # Navigatie + attachBaseContext
+├── SplashActivity.kt             # Splash screen
 ├── core/
-│   ├── theme/                # Color.kt, Theme.kt, Type.kt
-│   ├── navigation/           # AppNavigation.kt (Fase 4)
-│   ├── localization/         # LanguageManager.kt (Fase 2)
-│   └── common/               # Constants.kt
+│   ├── theme/                    # Color.kt, Theme.kt, Type.kt
+│   ├── common/                   # Constants.kt
+│   └── localization/             # LanguageManager.kt
 ├── data/
-│   ├── database/             # Room DB (Fase 1)
-│   ├── repository/           # Repositories (Fase 1)
-│   └── model/                # Domain models
-├── network/                  # API client (Fase 9)
-├── player/                   # Media3 player (Fase 3)
-├── ui/                       # Compose screens (Fase 4-11)
-├── di/                       # Hilt modules
-└── sync/                     # WorkManager (Fase 9)
+│   ├── database/                 # Room DB (6 entiteiten)
+│   ├── repository/               # 6 repositories
+│   └── datastore/                # SettingsDataStore
+├── network/
+│   └── api/                      # RadioBrowserApi, StationApiService
+├── player/                       # RadioPlayer, SleepTimerManager, MediaService
+├── ui/
+│   ├── home/                     # HomeScreen + HomeViewModel
+│   ├── player/                   # MiniPlayer, FullPlayerScreen, SleepTimerDialog
+│   ├── settings/                 # SettingsScreen
+│   ├── favorites/                # FavoritesScreen
+│   ├── personal/                 # AddPersonalStationScreen, MyStationsScreen
+│   ├── admin/                    # AdminScreen
+│   └── components/               # StationCard, SearchBar, Animations
+├── di/                           # AppModule, DatabaseModule, RepositoryModule, NetworkModule
+└── sync/                         # SyncWorker
 ```
 
 ---
 
-## 👤 Author
+## 🎨 Thema's
 
-**SmokerGreenOG** — Creator & Developer
+De app heeft 5 donkere thema's, wisselbaar via Instellingen:
+
+| Thema | Primaire kleur |
+|-------|---------------|
+| 🟣 Paars | `#A855F7` |
+| 🔵 Blauw | `#3B82F6` |
+| 🟢 Groen | `#22C55E` |
+| 🔴 Rood | `#EF4444` |
+| 🟠 Oranje | `#F97316` |
+
+---
+
+## 📻 Radio Bron
+
+Stations worden geladen van de gratis [Radio Browser API](https://api.radio-browser.info/):
+- `NL` — Nederlandse stations
+- `DE` — Duitse stations  
+- `US` — Amerikaanse stations
+- `BE` — Belgische stations
+
+Geen hardcoded stations in de APK — altijd up-to-date!
+
+---
+
+## 👤 Maker
+
+**SmokerGreenOG**
+- GitHub: [@SmokerGreenOG](https://github.com/SmokerGreenOG)
+- Website: [Futuristic Creations](https://futuristiccreations.nl/)
+- ToolCase: [github.com/SmokerGreenOG/ToolCase](https://github.com/SmokerGreenOG/ToolCase)
 
 ---
 
 ## 📄 License
 
-MIT License — see [LICENSE](LICENSE)
+MIT License — zie [LICENSE](LICENSE)
