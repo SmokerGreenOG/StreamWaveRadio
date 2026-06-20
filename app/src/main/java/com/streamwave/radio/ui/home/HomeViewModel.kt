@@ -32,6 +32,9 @@ class HomeViewModel @Inject constructor(
     private val _showSleepTimer = MutableStateFlow(false)
     val showSleepTimer: StateFlow<Boolean> = _showSleepTimer.asStateFlow()
 
+    private val _showAd = MutableStateFlow(false)
+    val showAd: StateFlow<Boolean> = _showAd.asStateFlow()
+
     private val _currentStationId = MutableStateFlow<Long?>(null)
     val currentStationId: StateFlow<Long?> = _currentStationId.asStateFlow()
 
@@ -39,10 +42,16 @@ class HomeViewModel @Inject constructor(
     val isFavorite: StateFlow<Boolean> = _isFavorite.asStateFlow()
 
     fun setShowSleepTimer(show: Boolean) { _showSleepTimer.value = show }
+    fun dismissAd() { _showAd.value = false }
 
     init {
         viewModelScope.launch { stationRepository.getOfficialStations().collect { _officialStations.value = it } }
         viewModelScope.launch { stationRepository.getFeaturedStations().collect { _featuredStations.value = it } }
+        // Toon reclame na 60 seconden
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(60_000L)
+            _showAd.value = true
+        }
     }
 
     fun onSearch(query: String) {

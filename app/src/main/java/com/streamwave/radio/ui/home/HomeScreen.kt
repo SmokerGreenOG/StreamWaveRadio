@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,11 +39,13 @@ fun HomeScreen(
     onOpenSettings: () -> Unit, onAddPersonalStation: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val ctx = LocalContext.current
     val searchQuery by viewModel.searchQuery.collectAsState()
     val stations by viewModel.officialStations.collectAsState()
     val featured by viewModel.featuredStations.collectAsState()
     val playerState by viewModel.radioPlayer.playerState.collectAsState()
     val showSleepTimer by viewModel.showSleepTimer.collectAsState()
+    val showAd by viewModel.showAd.collectAsState()
     val isFav by viewModel.isFavorite.collectAsState()
 
     val isPlaying = playerState.state == PlayingState.PLAYING
@@ -194,6 +197,27 @@ fun HomeScreen(
             sleepTimerManager = viewModel.radioPlayer.sleepTimerManager,
             onDismiss = { viewModel.setShowSleepTimer(false) },
             onStop = { viewModel.radioPlayer.stop() }
+        )
+    }
+
+    // Reclame popup — subtiel, 1x per sessie na 60 seconden
+    if (showAd) {
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissAd() },
+            containerColor = ElevatedCard,
+            shape = RoundedCornerShape(20.dp),
+            title = { Text("✨ Futuristic Creations", color = PrimaryText, fontWeight = FontWeight.Bold, fontSize = 18.sp) },
+            text = { Text("Creatieve websites, apps & digitale oplossingen. Bekijk het portfolio!", color = SecondaryText, fontSize = 14.sp) },
+            confirmButton = {
+                Button(onClick = {
+                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://futuristiccreations.nl/"))
+                    ctx.startActivity(intent)
+                    viewModel.dismissAd()
+                }, colors = ButtonDefaults.buttonColors(containerColor = Purple), shape = RoundedCornerShape(12.dp)) {
+                    Text("🌐 Bezoek website", color = PrimaryText)
+                }
+            },
+            dismissButton = { TextButton(onClick = { viewModel.dismissAd() }) { Text("Sluiten", color = SecondaryText) } }
         )
     }
 }
