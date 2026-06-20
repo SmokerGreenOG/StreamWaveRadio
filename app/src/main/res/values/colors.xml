@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hoofdachtergronden -->
+    <color name="background">#FF140B24</color>
+    <color name="panel">#FF1C1033</color>
+    <color name="card">#FF24143F</color>
+    <color name="elevated_card">#FF2B1850</color>
+
+    <!-- Paars palet -->
+    <color name="purple">#FFA855F7</color>
+    <color name="light_purple">#FFC084FC</color>
+    <color name="dark_purple">#FF7C3AED</color>
+
+    <!-- Roze palet -->
+    <color name="pink">#FFEC4899</color>
+    <color name="light_pink">#FFF472B6</color>
+
+    <!-- Blauw palet -->
+    <color name="blue">#FF3B82F6</color>
+    <color name="light_blue">#FF60A5FA</color>
+
+    <!-- Cyaan -->
+    <color name="cyan">#FF06B6D4</color>
+
+    <!-- Tekst -->
+    <color name="primary_text">#FFF1E8FF</color>
+    <color name="secondary_text">#FFA78BCA</color>
+
+    <!-- Status -->
+    <color name="live_red">#FFFF4444</color>
+    <color name="error_red">#FFEF4444</color>
+    <color name="success_green">#FF22C55E</color>
+    <color name="warning_yellow">#FFEAB308</color>
+</resources>
