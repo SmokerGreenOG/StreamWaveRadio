@@ -1,6 +1,7 @@
 package com.streamwave.radio.ui.home
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -16,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.streamwave.radio.R
 import com.streamwave.radio.core.theme.*
 import com.streamwave.radio.player.PlayingState
 import com.streamwave.radio.ui.components.*
@@ -59,7 +62,12 @@ fun HomeScreen(
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("🎵", fontSize = 24.sp)
+                        Image(
+                            painter = painterResource(id = R.drawable.app_logo_small),
+                            contentDescription = "StreamWave Radio",
+                            modifier = Modifier.size(36.dp).clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Fit
+                        )
                         Spacer(Modifier.width(8.dp))
                         Text("StreamWave Radio", color = PrimaryText, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                     }
