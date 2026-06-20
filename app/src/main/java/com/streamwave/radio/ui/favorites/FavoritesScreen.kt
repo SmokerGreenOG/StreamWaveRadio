@@ -35,7 +35,9 @@ import javax.inject.Inject
 @Composable
 fun FavoritesScreen(
     onBack: () -> Unit,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(
+        viewModelStoreOwner = androidx.compose.ui.platform.LocalContext.current as androidx.activity.ComponentActivity
+    )
 ) {
     // Haal favorites op via viewModel
     val favoriteIds by homeViewModel.getFavorites().collectAsState()

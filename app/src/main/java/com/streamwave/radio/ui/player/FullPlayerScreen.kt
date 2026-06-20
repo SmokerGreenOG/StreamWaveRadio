@@ -37,7 +37,9 @@ import com.streamwave.radio.ui.home.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewModel()) {
+fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewModel(
+    viewModelStoreOwner = LocalContext.current as androidx.activity.ComponentActivity
+)) {
     val ctx = LocalContext.current
     val state by viewModel.radioPlayer.playerState.collectAsState()
     var showSleepTimer by remember { mutableStateOf(false) }
