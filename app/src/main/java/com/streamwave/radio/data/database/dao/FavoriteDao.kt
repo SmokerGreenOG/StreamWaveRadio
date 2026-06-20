@@ -18,7 +18,7 @@ interface FavoriteDao {
     @Query("SELECT * FROM favorites WHERE stationType = :type AND stationId = :stationId LIMIT 1")
     suspend fun getByStation(type: String, stationId: Long): FavoriteEntity?
 
-    @Query("SELECT COUNT(*) FROM favorites WHERE stationType = :type AND stationId = :stationId")
+    @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE stationType = :type AND stationId = :stationId)")
     suspend fun isFavorite(type: String, stationId: Long): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
