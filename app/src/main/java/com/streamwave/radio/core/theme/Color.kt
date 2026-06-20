@@ -38,6 +38,14 @@ val OrangeTheme = StreamWaveColors(
 
 val AllThemes = listOf(PurpleTheme, BlueTheme, GreenTheme, RedTheme, OrangeTheme)
 
+fun getThemeNameRes(index: Int): Int = when (index) {
+    0 -> R.string.theme_purple
+    1 -> R.string.theme_blue
+    2 -> R.string.theme_green
+    3 -> R.string.theme_red
+    else -> R.string.theme_orange
+}
+
 // === Hoofdkleuren (dynamisch via currentTheme) ===
 var currentTheme = PurpleTheme
 

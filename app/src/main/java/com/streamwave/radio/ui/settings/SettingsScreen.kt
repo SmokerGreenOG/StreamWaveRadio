@@ -49,7 +49,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpenAdmin: () -> Unit, onOpenMyStations
             HorizontalDivider(color = GlassBorder, modifier = Modifier.padding(vertical = 12.dp))
 
             // Thema
-            SettingsRow(icon = Icons.Default.Palette, title = "Thema", subtitle = currentTheme.name, onClick = { showThemePicker = true })
+            SettingsRow(icon = Icons.Default.Palette, title = stringResource(R.string.theme_label), subtitle = "", onClick = { showThemePicker = true })
             SettingsRow(icon = Icons.Default.Language, title = stringResource(R.string.language), subtitle = "", onClick = { showLanguagePicker = true })
             SettingsRow(icon = Icons.Default.Radio, title = stringResource(R.string.my_stations), subtitle = "", onClick = onOpenMyStations)
             HorizontalDivider(color = GlassBorder, modifier = Modifier.padding(vertical = 12.dp))
@@ -64,7 +64,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpenAdmin: () -> Unit, onOpenMyStations
 
     if (showThemePicker) {
         AlertDialog(onDismissRequest = { showThemePicker = false }, containerColor = Panel,
-            title = { Text("Kies thema", color = PrimaryText) },
+            title = { Text(stringResource(R.string.select_theme), color = PrimaryText) },
             text = {
                 Column { AllThemes.forEachIndexed { idx, theme ->
                     TextButton(onClick = {
@@ -77,7 +77,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpenAdmin: () -> Unit, onOpenMyStations
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(Modifier.size(20.dp).background(theme.primary, RoundedCornerShape(10.dp)))
                             Spacer(Modifier.width(12.dp))
-                            Text(theme.name, color = PrimaryText, fontSize = 16.sp)
+                            Text(stringResource(getThemeNameRes(idx)), color = PrimaryText, fontSize = 16.sp)
                         }
                     }
                 } }

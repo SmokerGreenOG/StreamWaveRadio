@@ -54,4 +54,12 @@
     <string name="loading">Laden…</string><string name="save_play">Speichern &amp; abspielen</string>
     <string name="testing">Testen…</string><string name="admin_secured">🔒 Gesichertes Admin-Panel</string>
     <string name="back">Zurück</string><string name="buffering">Puffern…</string>
+    <string name="select_theme">Thema wählen</string>
+    <string name="theme_purple">Lila</string>
+    <string name="theme_blue">Blau</string>
+    <string name="theme_green">Grün</string>
+    <string name="theme_red">Rot</string>
+    <string name="theme_orange">Orange</string>
+    <string name="theme_label">Thema</string>
+    <string name="persoonlijk_label">Persönlich</string>
 </resources>

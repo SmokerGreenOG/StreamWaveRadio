@@ -109,4 +109,12 @@
     <string name="admin_secured">🔒 Beveiligd adminpaneel</string>
     <string name="back">Terug</string>
     <string name="buffering">Bufferen…</string>
+    <string name="select_theme">Kies thema</string>
+    <string name="theme_purple">Paars</string>
+    <string name="theme_blue">Blauw</string>
+    <string name="theme_green">Groen</string>
+    <string name="theme_red">Rood</string>
+    <string name="theme_orange">Oranje</string>
+    <string name="theme_label">Thema</string>
+    <string name="persoonlijk_label">Persoonlijk</string>
 </resources>
