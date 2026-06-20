@@ -38,18 +38,18 @@ val OrangeTheme = StreamWaveColors(
 
 val AllThemes = listOf(PurpleTheme, BlueTheme, GreenTheme, RedTheme, OrangeTheme)
 
-// === Hoofdkleuren (worden overschreven door thema) ===
+// === Hoofdkleuren (dynamisch via currentTheme) ===
 var currentTheme = PurpleTheme
 
-val Purple = Color(0xFFA855F7)
-val PurpleGlow = Color(0x40A855F7)
-val LightPurple = Color(0xFFC084FC)
-val DarkPurple = Color(0xFF7C3AED)
-val Pink = Color(0xFFEC4899)
-val PinkGlow = Color(0x40EC4899)
-val LightPink = Color(0xFFF472B6)
-val Blue = Color(0xFF3B82F6)
-val Cyan = Color(0xFF06B6D4)
+val Purple get() = currentTheme.primary
+val PurpleGlow get() = currentTheme.primaryGlow
+val LightPurple get() = currentTheme.primaryLight
+val DarkPurple get() = currentTheme.primaryDark
+val Pink get() = currentTheme.accent
+val PinkGlow get() = currentTheme.accentGlow
+val LightPink get() = currentTheme.accent
+val Blue get() = Color(0xFF3B82F6)
+val Cyan get() = Color(0xFF06B6D4)
 
 val Background = Color(0xFF0D0A1A)
 val Panel = Color(0xFF15102A)
