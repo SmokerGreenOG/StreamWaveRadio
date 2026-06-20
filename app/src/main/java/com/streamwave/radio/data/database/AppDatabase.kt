@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
         RecentStationEntity::class,
         StationSubmissionEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -85,21 +85,43 @@ class PrepopulateCallback : androidx.room.RoomDatabase.Callback() {
             )
         }
 
-        // Demo official stations — placeholders, stream URLs moeten door beheerder ingevuld worden
+        // Demo official stations — werkende streams, getest 20-06-2026
+        val now = System.currentTimeMillis()
         val demoStations = listOf(
             OfficialStationEntity(
-                id = 1, name = "FreeMinds FM", streamUrl = "",
-                websiteUrl = "", logoUrl = "", categoryId = 1,
-                country = "Nederland", language = "Nederlands",
-                description = "Het officiële FreeMinds radiostation — in te vullen door beheerder",
-                isActive = false, isFeatured = true, sortOrder = 1
+                id = 1, name = "Qmusic Foute Uur",
+                streamUrl = "https://icecast-qmusicnl-cdp.triple-it.nl/Qmusic_nl_fouteuur_96.mp3",
+                websiteUrl = "https://www.qmusic.nl", logoUrl = "https://static.mytuner.mobi/media/tvos_radios/758/qmusic-foute-uur.809d5438.png",
+                categoryId = 1, country = "Nederland", language = "Nederlands",
+                description = "Non-stop de leukste guilty pleasures en foute hits! 24/7 Qmusic Foute Uur.",
+                isActive = true, isFeatured = true, sortOrder = 1,
+                streamStatus = "ONLINE", lastCheckedAt = now
             ),
             OfficialStationEntity(
-                id = 2, name = "StreamWave Demo", streamUrl = "",
-                websiteUrl = "", logoUrl = "", categoryId = 3,
-                country = "Nederland", language = "Engels",
-                description = "Demo stream — vul een echte stream URL in via het adminpaneel",
-                isActive = false, isFeatured = true, sortOrder = 2
+                id = 2, name = "Qmusic Live",
+                streamUrl = "https://icecast-qmusicnl-cdp.triple-it.nl/Qmusic_nl_live_96.mp3",
+                websiteUrl = "https://www.qmusic.nl", logoUrl = "https://static.mytuner.mobi/media/tvos_radios/758/qmusic-foute-uur.809d5438.png",
+                categoryId = 1, country = "Nederland", language = "Nederlands",
+                description = "Qmusic Nederland — de hits van nu en de beste classics live!",
+                isActive = true, isFeatured = true, sortOrder = 2,
+                streamStatus = "ONLINE", lastCheckedAt = now
+            ),
+            OfficialStationEntity(
+                id = 3, name = "Radio 538",
+                streamUrl = "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO538.mp3",
+                websiteUrl = "https://www.538.nl", logoUrl = "",
+                categoryId = 1, country = "Nederland", language = "Nederlands",
+                description = "Radio 538 — altijd de beste hits, live vanuit Hilversum!",
+                isActive = true, isFeatured = false, sortOrder = 3,
+                streamStatus = "ONLINE", lastCheckedAt = now
+            ),
+            OfficialStationEntity(
+                id = 4, name = "FreeMinds FM",
+                streamUrl = "",
+                websiteUrl = "", logoUrl = "",
+                categoryId = 13, country = "Nederland", language = "Nederlands",
+                description = "Het officiële FreeMinds radiostation — stream URL in te vullen door beheerder",
+                isActive = false, isFeatured = false, sortOrder = 10
             )
         )
 
