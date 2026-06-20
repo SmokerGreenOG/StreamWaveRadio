@@ -121,10 +121,12 @@ class RadioPlayer @Inject constructor(
     }
 
     fun setVolume(volume: Float) {
-        exoPlayer.volume = volume.coerceIn(0f, 1f)
+        // Boost tot 200% (ExoPlayer ondersteunt hogere waarden)
+        val boosted = volume.coerceIn(0f, 2f)
+        exoPlayer.volume = boosted
         _playerState.value = _playerState.value.copy(
-            volume = volume.coerceIn(0f, 1f),
-            isMuted = volume == 0f
+            volume = boosted,
+            isMuted = boosted <= 0.01f
         )
     }
 

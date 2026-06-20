@@ -120,6 +120,7 @@ fun MiniPlayer(
                         value = state.volume,
                         onValueChange = { radioPlayer.setVolume(it) },
                         modifier = Modifier.weight(1f),
+                        valueRange = 0f..2f,
                         colors = SliderDefaults.colors(
                             thumbColor = Purple, activeTrackColor = Purple,
                             inactiveTrackColor = GlassBorder

@@ -130,7 +130,7 @@ fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewMode
                         "Mute", tint = SecondaryText)
                 }
                 Slider(value = state.volume, onValueChange = { viewModel.radioPlayer.setVolume(it) },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f), valueRange = 0f..2f,
                     colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple, inactiveTrackColor = GlassBorder))
                 Text("${(state.volume * 100).toInt()}%", color = SecondaryText, fontSize = 12.sp)
             }

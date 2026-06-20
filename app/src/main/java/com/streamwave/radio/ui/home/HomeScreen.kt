@@ -146,6 +146,7 @@ fun HomeScreen(
                                     value = playerState.volume,
                                     onValueChange = { viewModel.radioPlayer.setVolume(it) },
                                     modifier = Modifier.weight(1f),
+                                    valueRange = 0f..2f,
                                     colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple, inactiveTrackColor = GlassBorder)
                                 )
                                 Text("${(playerState.volume * 100).toInt()}%", color = SecondaryText, fontSize = 11.sp)

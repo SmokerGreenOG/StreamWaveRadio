@@ -53,7 +53,7 @@ fun SettingsScreen(
                 Slider(
                     value = playerState.volume,
                     onValueChange = { homeViewModel.radioPlayer.setVolume(it) },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f), valueRange = 0f..2f,
                     colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple)
                 )
                 IconButton(onClick = { homeViewModel.radioPlayer.setVolume(1f) }) {
