@@ -1,7 +1,9 @@
 package com.streamwave.radio.ui.player
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -11,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -19,15 +23,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.streamwave.radio.core.theme.*
 import com.streamwave.radio.player.PlayingState
-import com.streamwave.radio.ui.components.PlaceholderLogo
+import com.streamwave.radio.ui.components.*
 import com.streamwave.radio.ui.home.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FullPlayerScreen(
-    onBack: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
-) {
+fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewModel()) {
     val state by viewModel.radioPlayer.playerState.collectAsState()
     var showSleepTimer by remember { mutableStateOf(false) }
 
@@ -35,7 +36,7 @@ fun FullPlayerScreen(
         containerColor = Background,
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(state.stationName.ifEmpty { "StreamWave" }, color = PrimaryText) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Terug", tint = PrimaryText)
@@ -46,34 +47,35 @@ fun FullPlayerScreen(
         }
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp),
+            modifier = Modifier.fillMaxSize().padding(padding).padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Logo
-            Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
+            // Groot logo met glow
+            Box(
+                modifier = Modifier.size(220.dp).shadow(24.dp, CircleShape, ambientColor = PurpleGlow, spotColor = PurpleGlow),
+                contentAlignment = Alignment.Center
+            ) {
                 if (state.stationLogo.isNotEmpty()) {
-                    AsyncImage(
-                        model = state.stationLogo, contentDescription = null,
-                        modifier = Modifier.size(200.dp).clip(RoundedCornerShape(24.dp)),
+                    AsyncImage(model = state.stationLogo, contentDescription = null,
+                        modifier = Modifier.size(200.dp).clip(RoundedCornerShape(28.dp)).shadow(12.dp, RoundedCornerShape(28.dp), ambientColor = PinkGlow),
                         contentScale = ContentScale.Crop)
                 } else { PlaceholderLogo(state.stationName, 200) }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
 
-            // Name + Live
+            // Naam + LIVE
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(state.stationName, color = PrimaryText, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text(state.stationName, color = PrimaryText, fontSize = 26.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.width(12.dp))
-                Box(Modifier.clip(RoundedCornerShape(4.dp)).background(LiveRed).padding(horizontal = 8.dp, vertical = 3.dp)) {
-                    Text("LIVE", color = PrimaryText, fontSize = 11.sp)
-                }
+                PulseLive()
             }
 
-            // Artist - Title
+            // Visualizer
+            Spacer(Modifier.height(12.dp))
+            LargeVisualizer(isPlaying = state.state == PlayingState.PLAYING)
+
+            // Artist/Title
             if (state.title.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
                 Text("${state.artist} — ${state.title}", color = SecondaryText, fontSize = 16.sp)
@@ -82,116 +84,122 @@ fun FullPlayerScreen(
                 Text("Verbinden…", color = Pink, fontSize = 14.sp)
             }
 
-            // Audio visualizer placeholder
-            Spacer(Modifier.height(16.dp))
-            Box(
-                Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)).background(GlassBorder)
-            ) {
-                if (state.state == PlayingState.PLAYING) {
-                    Box(Modifier.fillMaxWidth(0.7f).fillMaxHeight().background(Purple))
-                }
-            }
+            Spacer(Modifier.height(28.dp))
 
-            Spacer(Modifier.height(24.dp))
-
-            // Controls
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+            // Hoofdcontrols
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                 IconButton(onClick = {}) {
-                    Icon(Icons.Default.SkipPrevious, "Vorige", tint = SecondaryText, modifier = Modifier.size(32.dp))
+                    Icon(Icons.Default.SkipPrevious, "Vorige", tint = SecondaryText, modifier = Modifier.size(36.dp))
                 }
-                FilledIconButton(
-                    onClick = {
-                        if (state.state == PlayingState.PLAYING) viewModel.radioPlayer.pause()
-                        else viewModel.radioPlayer.resume()
-                    },
-                    modifier = Modifier.size(72.dp),
-                    shape = RoundedCornerShape(36.dp),
-                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = Purple)
+
+                // Play/Pauze — grote neon knop
+                Box(
+                    modifier = Modifier.size(80.dp).shadow(16.dp, CircleShape, ambientColor = PurpleGlow, spotColor = PurpleGlow),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        if (state.state == PlayingState.PLAYING) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        "Play/Pause", modifier = Modifier.size(36.dp)
-                    )
+                    FilledIconButton(
+                        onClick = {
+                            if (state.state == PlayingState.PLAYING) viewModel.radioPlayer.pause()
+                            else viewModel.radioPlayer.resume()
+                        },
+                        modifier = Modifier.size(72.dp),
+                        shape = CircleShape,
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = Purple,
+                            contentColor = PrimaryText
+                        )
+                    ) {
+                        Icon(
+                            if (state.state == PlayingState.PLAYING) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            "Play/Pause", modifier = Modifier.size(36.dp)
+                        )
+                    }
                 }
+
                 IconButton(onClick = { viewModel.radioPlayer.stop() }) {
-                    Icon(Icons.Default.Stop, "Stop", tint = SecondaryText, modifier = Modifier.size(32.dp))
+                    Icon(Icons.Default.Stop, "Stop", tint = SecondaryText, modifier = Modifier.size(36.dp))
                 }
             }
 
             Spacer(Modifier.height(24.dp))
 
-            // Volume slider
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-            ) {
+            // Volume
+            Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { viewModel.radioPlayer.mute() }) {
-                    Icon(if (state.isMuted) Icons.Default.VolumeOff else Icons.Default.VolumeDown, "Mute", tint = SecondaryText)
+                    Icon(if (state.isMuted) Icons.Filled.VolumeOff else Icons.Filled.VolumeDown,
+                        "Mute", tint = SecondaryText)
                 }
-                Slider(
-                    value = state.volume,
-                    onValueChange = { viewModel.radioPlayer.setVolume(it) },
+                Slider(value = state.volume, onValueChange = { viewModel.radioPlayer.setVolume(it) },
                     modifier = Modifier.weight(1f),
-                    colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple, inactiveTrackColor = GlassBorder)
-                )
+                    colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple, inactiveTrackColor = GlassBorder))
                 Text("${(state.volume * 100).toInt()}%", color = SecondaryText, fontSize = 12.sp)
             }
 
             Spacer(Modifier.height(16.dp))
 
-            // Extra controls
-            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                IconButton(onClick = { viewModel.radioPlayer.mute() }) {
-                    Icon(if (state.isMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp, "Volume", tint = SecondaryText)
+            // Extra knoppen
+            Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+                IconButton(onClick = {}) {
+                    Icon(Icons.Default.FavoriteBorder, "Favoriet", tint = Pink, modifier = Modifier.size(28.dp))
                 }
                 IconButton(onClick = { showSleepTimer = true }) {
-                    Icon(Icons.Default.Bedtime, "Slaaptimer", tint = Pink)
+                    Icon(Icons.Filled.Bedtime, "Slaaptimer", tint = Cyan, modifier = Modifier.size(28.dp))
                 }
                 IconButton(onClick = {}) {
-                    Icon(Icons.Default.FavoriteBorder, "Favoriet", tint = Pink)
+                    Icon(Icons.Default.Share, "Delen", tint = SecondaryText, modifier = Modifier.size(28.dp))
                 }
             }
         }
 
         if (showSleepTimer) {
-            SleepTimerDialog(
-                currentMinutes = 0,
-                onSelect = { mins ->
-                    // Start sleep timer
-                    showSleepTimer = false
+            AlertDialog(
+                onDismissRequest = { showSleepTimer = false },
+                containerColor = Panel,
+                title = { Text("Slaaptimer", color = PrimaryText) },
+                text = {
+                    Column {
+                        listOf(10, 20, 30, 45, 60, 90).forEach { mins ->
+                            TextButton(onClick = { showSleepTimer = false }, modifier = Modifier.fillMaxWidth()) {
+                                Text("$mins minuten", color = PrimaryText, fontSize = 16.sp)
+                            }
+                        }
+                    }
                 },
-                onDismiss = { showSleepTimer = false }
+                confirmButton = { TextButton(onClick = { showSleepTimer = false }) { Text("Annuleren", color = SecondaryText) } }
             )
         }
     }
 }
 
+// === Grotere audio visualizer ===
 @Composable
-fun SleepTimerDialog(
-    currentMinutes: Int,
-    onSelect: (Int) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = Panel,
-        title = { Text("Slaaptimer", color = PrimaryText) },
-        text = {
-            Column {
-                listOf(10, 20, 30, 45, 60, 90).forEach { mins ->
-                    TextButton(onClick = { onSelect(mins) }, modifier = Modifier.fillMaxWidth()) {
-                        Text("$mins minuten", color = PrimaryText, fontSize = 16.sp)
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Annuleren", color = SecondaryText)
-            }
+fun LargeVisualizer(isPlaying: Boolean) {
+    val barCount = 32
+    Row(
+        modifier = Modifier.fillMaxWidth().height(48.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        for (i in 0 until barCount) {
+            val transition = rememberInfiniteTransition(label = "v$i")
+            val height by transition.animateFloat(
+                initialValue = 0.1f, targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(300 + i * 80, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                ), label = "h$i"
+            )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(if (isPlaying) height else 0.08f)
+                    .clip(RoundedCornerShape(1.dp))
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Purple, Pink, Cyan)
+                        )
+                    )
+            )
         }
-    )
+    }
 }
