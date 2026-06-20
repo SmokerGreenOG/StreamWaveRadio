@@ -11,34 +11,29 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.streamwave.radio.R
 import com.streamwave.radio.core.theme.*
 import com.streamwave.radio.data.database.entity.PersonalStationEntity
 import com.streamwave.radio.ui.components.PlaceholderLogo
 import com.streamwave.radio.ui.home.HomeViewModel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyStationsScreen(onBack: () -> Unit, homeViewModel: HomeViewModel = hiltViewModel()) {
-    val dao = remember {
-        val app = androidx.compose.ui.platform.LocalContext.current.applicationContext as com.streamwave.radio.StreamWaveApp
-        app.db.personalStationDao()
-    }
     var stations by remember { mutableStateOf<List<PersonalStationEntity>>(emptyList()) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        dao.getAll().collect { stations = it }
+        scope.launch {
+            homeViewModel.personalStationDao().getAll().collect { stations = it }
+        }
     }
 
     Scaffold(containerColor = Background,
@@ -52,18 +47,15 @@ fun MyStationsScreen(onBack: () -> Unit, homeViewModel: HomeViewModel = hiltView
                     Icon(Icons.Default.Radio, null, tint = Purple, modifier = Modifier.size(48.dp))
                     Spacer(Modifier.height(16.dp))
                     Text(stringResource(R.string.no_stations), color = SecondaryText)
-                    Text("Voeg een persoonlijk station toe via de + knop", color = SecondaryText, fontSize = 12.sp)
                 }
             }
         } else {
             LazyColumn(Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 item { Spacer(Modifier.height(4.dp)) }
                 items(stations, key = { it.id }) { station ->
-                    Surface(
-                        onClick = { homeViewModel.radioPlayer.play(station.streamUrl, station.name) },
+                    Surface(onClick = { homeViewModel.radioPlayer.play(station.streamUrl, station.name) },
                         modifier = Modifier.fillMaxWidth().shadow(4.dp, RoundedCornerShape(14.dp), ambientColor = PurpleGlow),
-                        shape = RoundedCornerShape(14.dp), color = Card
-                    ) {
+                        shape = RoundedCornerShape(14.dp), color = Card) {
                         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                             PlaceholderLogo(station.name, 44)
                             Spacer(Modifier.width(12.dp))

@@ -17,6 +17,7 @@ class HomeViewModel @Inject constructor(
     private val stationRepository: StationRepository,
     private val favoriteRepository: FavoriteRepository,
     private val recentStationRepository: RecentStationRepository,
+    private val personalStationDao: com.streamwave.radio.data.database.dao.PersonalStationDao,
     val radioPlayer: RadioPlayer
 ) : ViewModel() {
 
@@ -43,6 +44,7 @@ class HomeViewModel @Inject constructor(
 
     fun setShowSleepTimer(show: Boolean) { _showSleepTimer.value = show }
     fun dismissAd() { _showAd.value = false }
+    fun personalStationDao() = personalStationDao
 
     init {
         viewModelScope.launch { stationRepository.getOfficialStations().collect { _officialStations.value = it } }

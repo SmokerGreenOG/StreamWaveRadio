@@ -8,15 +8,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.streamwave.radio.R
 import com.streamwave.radio.core.theme.*
-import com.streamwave.radio.data.repository.PersonalStationRepository
 import com.streamwave.radio.data.database.entity.PersonalStationEntity
+import com.streamwave.radio.data.repository.PersonalStationRepository
 import com.streamwave.radio.ui.home.HomeViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,12 +34,6 @@ fun AddPersonalStationScreen(onBack: () -> Unit, homeViewModel: HomeViewModel = 
     var testResult by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
-    // Haal repository via Hilt (de app injecteert hem)
-    val repo = remember { 
-        (androidx.compose.ui.platform.LocalContext.current.applicationContext as com.streamwave.radio.StreamWaveApp)
-            .let { it.db.personalStationDao() }
-    }
-
     Scaffold(containerColor = Background,
         topBar = { TopAppBar(title = { Text(stringResource(R.string.add_station), color = PrimaryText) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), tint = PrimaryText) } },
@@ -48,9 +45,8 @@ fun AddPersonalStationScreen(onBack: () -> Unit, homeViewModel: HomeViewModel = 
             OutlinedTextField(value = websiteUrl, onValueChange = { websiteUrl = it }, label = { Text(stringResource(R.string.website_url)) }, colors = fdColors(), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text(stringResource(R.string.description)) }, colors = fdColors(), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth(), minLines = 3)
 
-            // Test resultaat
             if (testResult != null) {
-                Text(testResult!!, color = if (testResult == "✅ Stream werkt!") SuccessGreen else ErrorRed, fontSize = 13.sp)
+                Text(testResult!!, color = if (testResult!!.startsWith("✅")) SuccessGreen else ErrorRed, fontSize = 13.sp)
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -67,9 +63,9 @@ fun AddPersonalStationScreen(onBack: () -> Unit, homeViewModel: HomeViewModel = 
                             conn.disconnect()
                             if (type.contains("audio") || type.contains("mpeg") || type.contains("ogg") || type.contains("aac") || type.contains("x-mpegurl"))
                                 "✅ Stream werkt!"
-                            else "⚠️ Geen audio-stream gedetecteerd ($type)"
+                            else "⚠️ Geen audio-stream ($type)"
                         } catch (e: Exception) {
-                            "❌ ${e.message?.take(50) ?: "Stream niet bereikbaar"}"
+                            "❌ ${e.message?.take(50) ?: "Niet bereikbaar"}"
                         }
                         testing = false
                     }
@@ -80,11 +76,11 @@ fun AddPersonalStationScreen(onBack: () -> Unit, homeViewModel: HomeViewModel = 
                 Button(onClick = {
                     if (name.isNotBlank() && streamUrl.isNotBlank()) {
                         scope.launch {
-                            val station = PersonalStationEntity(
+                            val dao = homeViewModel.personalStationDao()
+                            dao.insert(PersonalStationEntity(
                                 name = name, streamUrl = streamUrl, websiteUrl = websiteUrl,
                                 description = description, categoryId = 15, lastPlayedAt = System.currentTimeMillis()
-                            )
-                            repo.insert(station)
+                            ))
                         }
                         homeViewModel.radioPlayer.play(streamUrl, name)
                         onBack()
