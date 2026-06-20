@@ -2,13 +2,16 @@ package com.streamwave.radio
 
 import android.app.Application
 import com.streamwave.radio.core.localization.LanguageManager
+import com.streamwave.radio.core.theme.applyTheme
 import com.streamwave.radio.data.database.AppDatabase
+import com.streamwave.radio.data.datastore.SettingsDataStore
 import com.streamwave.radio.data.database.entity.CategoryEntity
 import com.streamwave.radio.data.database.entity.OfficialStationEntity
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,14 +20,17 @@ class StreamWaveApp : Application() {
 
     @Inject lateinit var db: AppDatabase
     @Inject lateinit var languageManager: LanguageManager
+    @Inject lateinit var settingsDataStore: SettingsDataStore
 
     override fun onCreate() {
         super.onCreate()
-        // Pas opgeslagen taal toe bij opstarten
         languageManager.applySavedLanguage()
-        CoroutineScope(Dispatchers.IO).launch {
-            prepopulateIfNeeded()
+        // Pas opgeslagen thema toe
+        kotlinx.coroutines.runBlocking {
+            val idx = settingsDataStore.theme.first().toIntOrNull() ?: 0
+            applyTheme(idx)
         }
+        CoroutineScope(Dispatchers.IO).launch { prepopulateIfNeeded() }
     }
 
     private suspend fun prepopulateIfNeeded() {

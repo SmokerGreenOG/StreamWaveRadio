@@ -17,6 +17,7 @@ class SettingsDataStore(private val context: Context) {
         val KEY_LANGUAGE = stringPreferencesKey("language")
         val KEY_SLEEP_TIMER = stringPreferencesKey("sleep_timer")
         val KEY_ADMIN_PIN = stringPreferencesKey("admin_pin")
+        val KEY_THEME = stringPreferencesKey("theme")
         const val DEFAULT_LANGUAGE = "system"
     }
 
@@ -44,5 +45,13 @@ class SettingsDataStore(private val context: Context) {
 
     val adminPin: Flow<String?> = context.dataStore.data.map { prefs ->
         prefs[KEY_ADMIN_PIN]
+    }
+
+    val theme: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[KEY_THEME] ?: "0"
+    }
+
+    suspend fun setTheme(index: String) {
+        context.dataStore.edit { prefs -> prefs[KEY_THEME] = index }
     }
 }
