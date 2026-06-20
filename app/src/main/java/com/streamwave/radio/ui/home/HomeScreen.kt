@@ -181,8 +181,9 @@ fun HomeScreen(
 
             item { SectionTitle("📻 ${stringResource(R.string.all_stations)}") }
             if (stations.isEmpty()) {
-                item { Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.loading), color = SecondaryText) } }
+                items(8) {
+                    StationShimmer()
+                }
             }
             items(stations, key = { it.id }) { station ->
                 StationListItem(name = station.name, logoUrl = station.logoUrl, description = station.description,
