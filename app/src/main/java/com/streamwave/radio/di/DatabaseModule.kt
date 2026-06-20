@@ -3,7 +3,6 @@ package com.streamwave.radio.di
 import android.content.Context
 import androidx.room.Room
 import com.streamwave.radio.data.database.AppDatabase
-import com.streamwave.radio.data.database.PrepopulateCallback
 import com.streamwave.radio.data.database.dao.CategoryDao
 import com.streamwave.radio.data.database.dao.FavoriteDao
 import com.streamwave.radio.data.database.dao.OfficialStationDao
@@ -29,7 +28,6 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-            .addCallback(PrepopulateCallback())
             .fallbackToDestructiveMigration()
             .build()
     }
