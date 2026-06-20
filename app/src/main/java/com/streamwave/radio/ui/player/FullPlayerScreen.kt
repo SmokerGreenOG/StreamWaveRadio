@@ -123,6 +123,25 @@ fun FullPlayerScreen(
 
             Spacer(Modifier.height(24.dp))
 
+            // Volume slider
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { viewModel.radioPlayer.mute() }) {
+                    Icon(if (state.isMuted) Icons.Default.VolumeOff else Icons.Default.VolumeDown, "Mute", tint = SecondaryText)
+                }
+                Slider(
+                    value = state.volume,
+                    onValueChange = { viewModel.radioPlayer.setVolume(it) },
+                    modifier = Modifier.weight(1f),
+                    colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple, inactiveTrackColor = GlassBorder)
+                )
+                Text("${(state.volume * 100).toInt()}%", color = SecondaryText, fontSize = 12.sp)
+            }
+
+            Spacer(Modifier.height(16.dp))
+
             // Extra controls
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
                 IconButton(onClick = { viewModel.radioPlayer.mute() }) {
