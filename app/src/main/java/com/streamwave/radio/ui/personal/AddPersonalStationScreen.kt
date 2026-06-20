@@ -14,7 +14,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.streamwave.radio.R
 import com.streamwave.radio.core.theme.*
+import com.streamwave.radio.data.repository.PersonalStationRepository
+import com.streamwave.radio.data.database.entity.PersonalStationEntity
 import com.streamwave.radio.ui.home.HomeViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,6 +28,14 @@ fun AddPersonalStationScreen(onBack: () -> Unit, homeViewModel: HomeViewModel = 
     var websiteUrl by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var testing by remember { mutableStateOf(false) }
+    var testResult by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+
+    // Haal repository via Hilt (de app injecteert hem)
+    val repo = remember { 
+        (androidx.compose.ui.platform.LocalContext.current.applicationContext as com.streamwave.radio.StreamWaveApp)
+            .let { it.db.personalStationDao() }
+    }
 
     Scaffold(containerColor = Background,
         topBar = { TopAppBar(title = { Text(stringResource(R.string.add_station), color = PrimaryText) },
@@ -35,13 +47,51 @@ fun AddPersonalStationScreen(onBack: () -> Unit, homeViewModel: HomeViewModel = 
             OutlinedTextField(value = streamUrl, onValueChange = { streamUrl = it }, label = { Text(stringResource(R.string.stream_url)) }, placeholder = { Text("https://...mp3") }, colors = fdColors(), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = websiteUrl, onValueChange = { websiteUrl = it }, label = { Text(stringResource(R.string.website_url)) }, colors = fdColors(), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text(stringResource(R.string.description)) }, colors = fdColors(), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth(), minLines = 3)
+
+            // Test resultaat
+            if (testResult != null) {
+                Text(testResult!!, color = if (testResult == "✅ Stream werkt!") SuccessGreen else ErrorRed, fontSize = 13.sp)
+            }
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = { testing = true }, shape = RoundedCornerShape(12.dp), enabled = streamUrl.isNotBlank() && !testing) {
-                    Text(if (testing) stringResource(R.string.testing) else stringResource(R.string.test_stream), color = Purple) }
+                OutlinedButton(onClick = {
+                    testing = true; testResult = null
+                    scope.launch {
+                        testResult = try {
+                            val url = java.net.URL(streamUrl)
+                            val conn = url.openConnection() as java.net.HttpURLConnection
+                            conn.connectTimeout = 5000; conn.readTimeout = 5000
+                            conn.setRequestProperty("User-Agent", "StreamWave Radio")
+                            conn.connect()
+                            val type = conn.contentType ?: ""
+                            conn.disconnect()
+                            if (type.contains("audio") || type.contains("mpeg") || type.contains("ogg") || type.contains("aac") || type.contains("x-mpegurl"))
+                                "✅ Stream werkt!"
+                            else "⚠️ Geen audio-stream gedetecteerd ($type)"
+                        } catch (e: Exception) {
+                            "❌ ${e.message?.take(50) ?: "Stream niet bereikbaar"}"
+                        }
+                        testing = false
+                    }
+                }, shape = RoundedCornerShape(12.dp), enabled = streamUrl.isNotBlank() && !testing) {
+                    Text(if (testing) stringResource(R.string.testing) else stringResource(R.string.test_stream), color = Purple)
+                }
                 Spacer(Modifier.weight(1f))
-                Button(onClick = { if (name.isNotBlank() && streamUrl.isNotBlank()) { homeViewModel.radioPlayer.play(streamUrl, name); onBack() } },
-                    shape = RoundedCornerShape(12.dp), colors = ButtonDefaults.buttonColors(containerColor = Purple), enabled = name.isNotBlank() && streamUrl.isNotBlank()) {
-                    Text(stringResource(R.string.save_play)) }
+                Button(onClick = {
+                    if (name.isNotBlank() && streamUrl.isNotBlank()) {
+                        scope.launch {
+                            val station = PersonalStationEntity(
+                                name = name, streamUrl = streamUrl, websiteUrl = websiteUrl,
+                                description = description, categoryId = 15, lastPlayedAt = System.currentTimeMillis()
+                            )
+                            repo.insert(station)
+                        }
+                        homeViewModel.radioPlayer.play(streamUrl, name)
+                        onBack()
+                    }
+                }, shape = RoundedCornerShape(12.dp), colors = ButtonDefaults.buttonColors(containerColor = Purple), enabled = name.isNotBlank() && streamUrl.isNotBlank()) {
+                    Text(stringResource(R.string.save_play))
+                }
             }
         }
     }
