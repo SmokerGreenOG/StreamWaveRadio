@@ -2,6 +2,7 @@ package com.streamwave.radio.core.theme
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.streamwave.radio.R
 
 // === Thema kleuren ===
 data class StreamWaveColors(
