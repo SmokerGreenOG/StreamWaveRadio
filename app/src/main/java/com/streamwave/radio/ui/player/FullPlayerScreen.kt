@@ -159,14 +159,15 @@ fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewMode
                     Icon(Icons.Filled.Bedtime, stringResource(R.string.sleep_timer), tint = Cyan, modifier = Modifier.size(28.dp))
                 }
                 // Share
+                val shareTitle = stringResource(R.string.share)
                 IconButton(onClick = {
                     val share = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                         type = "text/plain"
                         putExtra(android.content.Intent.EXTRA_TEXT, "🎵 ${state.stationName}\n📻 ${state.streamUrl}\n\nLuister via StreamWave Radio!")
                     }
-                    ctx.startActivity(android.content.Intent.createChooser(share, stringResource(R.string.share)))
+                    ctx.startActivity(android.content.Intent.createChooser(share, shareTitle))
                 }) {
-                    Icon(Icons.Default.Share, stringResource(R.string.share), tint = SecondaryText, modifier = Modifier.size(28.dp))
+                    Icon(Icons.Default.Share, shareTitle, tint = SecondaryText, modifier = Modifier.size(28.dp))
                 }
             }
         }
