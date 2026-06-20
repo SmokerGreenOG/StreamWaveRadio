@@ -1,6 +1,7 @@
 package com.streamwave.radio.player
 
 import android.content.Context
+import android.os.Build
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -88,6 +89,13 @@ class RadioPlayer @Inject constructor(
 
     fun play(streamUrl: String, stationName: String, stationLogo: String = "") {
         retryCount = 0
+        // Start foreground service voor lockscreen controls
+        val intent = android.content.Intent(context, MediaService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
         _playerState.value = _playerState.value.copy(
             stationName = stationName,
             streamUrl = streamUrl,
