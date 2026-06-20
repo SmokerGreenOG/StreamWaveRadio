@@ -23,11 +23,12 @@ class LanguageManager @Inject constructor(
         const val LANG_ES = "es"
         const val LANG_SYSTEM = "system"
 
-        val SUPPORTED_LANGUAGES = listOf(
-            Locale(LANG_NL), Locale(LANG_EN), Locale(LANG_DE), Locale(LANG_ES)
-        )
+        val SUPPORTED_LANGUAGES = listOf(Locale(LANG_NL), Locale(LANG_EN), Locale(LANG_DE), Locale(LANG_ES))
 
-        fun applyLocale(context: Context, language: String): Context {
+        // Statische cache voor directe beschikbaarheid (overleeft app restart niet, maar we slaan op in DataStore)
+        @Volatile var pendingLanguage: String? = null
+
+        fun applyLocale(context: Context, language: String) {
             val locale = when (language) {
                 LANG_NL -> Locale(LANG_NL)
                 LANG_DE -> Locale(LANG_DE)
@@ -42,11 +43,15 @@ class LanguageManager @Inject constructor(
                 @Suppress("DEPRECATION")
                 config.locale = locale
             }
-            return context.createConfigurationContext(config)
+            context.resources.updateConfiguration(config, context.resources.displayMetrics)
+            // Sla direct op in static cache
+            pendingLanguage = language
         }
     }
 
     fun getCurrentLanguage(): String {
+        // Check static cache eerst
+        pendingLanguage?.let { return it }
         return runBlocking { settingsDataStore.language.first() }
     }
 
@@ -54,8 +59,7 @@ class LanguageManager @Inject constructor(
         val deviceLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             context.resources.configuration.locales[0]
         } else {
-            @Suppress("DEPRECATION")
-            context.resources.configuration.locale
+            @Suppress("DEPRECATION") context.resources.configuration.locale
         }
         val deviceLang = deviceLocale.language
         return if (SUPPORTED_LANGUAGES.any { it.language == deviceLang }) deviceLang else LANG_EN
@@ -63,10 +67,12 @@ class LanguageManager @Inject constructor(
 
     fun getInitialLanguage(): String {
         val saved = getCurrentLanguage()
-        return if (saved == LANG_SYSTEM) detectDeviceLanguage() else saved
+        if (saved == LANG_SYSTEM) return detectDeviceLanguage()
+        return saved
     }
 
     suspend fun setLanguage(language: String) {
+        pendingLanguage = language
         settingsDataStore.setLanguage(language)
     }
 
