@@ -16,11 +16,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.streamwave.radio.R
 import com.streamwave.radio.core.theme.*
 import com.streamwave.radio.player.PlayingState
 import com.streamwave.radio.ui.components.*
@@ -39,7 +41,7 @@ fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewMode
                 title = { Text(state.stationName.ifEmpty { "StreamWave" }, color = PrimaryText) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Terug", tint = PrimaryText)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), tint = PrimaryText)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Background)
@@ -127,7 +129,7 @@ fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewMode
             Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { viewModel.radioPlayer.mute() }) {
                     Icon(if (state.isMuted) Icons.Filled.VolumeOff else Icons.Filled.VolumeDown,
-                        "Mute", tint = SecondaryText)
+                        stringResource(R.string.mute), tint = SecondaryText)
                 }
                 Slider(value = state.volume, onValueChange = { viewModel.radioPlayer.setVolume(it) },
                     modifier = Modifier.weight(1f), valueRange = 0f..2f,
@@ -140,13 +142,13 @@ fun FullPlayerScreen(onBack: () -> Unit, viewModel: HomeViewModel = hiltViewMode
             // Extra knoppen
             Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
                 IconButton(onClick = {}) {
-                    Icon(Icons.Default.FavoriteBorder, "Favoriet", tint = Pink, modifier = Modifier.size(28.dp))
+                    Icon(Icons.Default.FavoriteBorder, stringResource(R.string.favorite), tint = Pink, modifier = Modifier.size(28.dp))
                 }
                 IconButton(onClick = { showSleepTimer = true }) {
-                    Icon(Icons.Filled.Bedtime, "Slaaptimer", tint = Cyan, modifier = Modifier.size(28.dp))
+                    Icon(Icons.Filled.Bedtime, stringResource(R.string.sleep_timer), tint = Cyan, modifier = Modifier.size(28.dp))
                 }
                 IconButton(onClick = {}) {
-                    Icon(Icons.Default.Share, "Delen", tint = SecondaryText, modifier = Modifier.size(28.dp))
+                    Icon(Icons.Default.Share, stringResource(R.string.share), tint = SecondaryText, modifier = Modifier.size(28.dp))
                 }
             }
         }

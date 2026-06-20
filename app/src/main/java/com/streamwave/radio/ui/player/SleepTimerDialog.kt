@@ -6,123 +6,78 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.streamwave.radio.R
 import com.streamwave.radio.core.theme.*
 import com.streamwave.radio.player.SleepTimerManager
-import kotlinx.coroutines.delay
 
 @Composable
-fun SleepTimerDialogFull(
-    sleepTimerManager: SleepTimerManager,
-    onDismiss: () -> Unit,
-    onStop: () -> Unit
-) {
+fun SleepTimerDialogFull(sleepTimerManager: SleepTimerManager, onDismiss: () -> Unit, onStop: () -> Unit) {
     val remaining by sleepTimerManager.remainingSeconds.collectAsState()
     val isActive by sleepTimerManager.isActive.collectAsState()
     var customMinutes by remember { mutableStateOf("") }
     var showCustom by remember { mutableStateOf(false) }
 
-    // Auto-sluiten als timer afloopt
-    LaunchedEffect(remaining, isActive) {
-        if (!isActive && remaining == 0L && isActive) {
-            // Timer is net afgelopen
-        }
-    }
-
     AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = Panel,
-        shape = RoundedCornerShape(20.dp),
+        onDismissRequest = onDismiss, containerColor = Panel, shape = RoundedCornerShape(20.dp),
         title = {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("⏰ Slaaptimer", color = PrimaryText, fontWeight = FontWeight.Bold)
-                if (isActive) {
-                    Text(sleepTimerManager.formatRemaining(), color = LiveRed, fontSize = 14.sp)
-                }
+                Text("⏰ ${stringResource(R.string.sleep_timer)}", color = PrimaryText, fontWeight = FontWeight.Bold)
+                if (isActive) Text(sleepTimerManager.formatRemaining(), color = LiveRed, fontSize = 14.sp)
             }
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 if (isActive) {
-                    // Actieve timer — toon cancel
-                    Text("Timer loopt…", color = SecondaryText, fontSize = 14.sp)
+                    Text(stringResource(R.string.sleep_timer_active), color = SecondaryText, fontSize = 14.sp)
                     Spacer(Modifier.height(8.dp))
-                    Button(
-                        onClick = {
-                            sleepTimerManager.cancel()
-                            onDismiss()
-                        },
+                    Button(onClick = { sleepTimerManager.cancel(); onDismiss() },
                         colors = ButtonDefaults.buttonColors(containerColor = ErrorRed),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Timer annuleren", color = PrimaryText)
+                        shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.sleep_timer_cancel), color = PrimaryText)
                     }
                 } else if (showCustom) {
-                    // Custom tijd invoer
-                    OutlinedTextField(
-                        value = customMinutes,
-                        onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 4) customMinutes = it },
-                        label = { Text("Aantal minuten", color = SecondaryText) },
+                    OutlinedTextField(value = customMinutes, onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 4) customMinutes = it },
+                        label = { Text(stringResource(R.string.sleep_timer_custom_minutes), color = SecondaryText) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = fieldColors(),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        colors = fieldColors(), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(onClick = { showCustom = false }, shape = RoundedCornerShape(12.dp), modifier = Modifier.weight(1f)) {
-                            Text("Terug", color = SecondaryText)
-                        }
-                        Button(
-                            onClick = {
-                                val mins = customMinutes.toIntOrNull() ?: 0
-                                if (mins > 0) {
-                                    sleepTimerManager.start(mins) { onStop() }
-                                    onDismiss()
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Purple),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f),
-                            enabled = (customMinutes.toIntOrNull() ?: 0) > 0
-                        ) {
-                            Text("Start")
+                            Text(stringResource(R.string.cancel), color = SecondaryText) }
+                        Button(onClick = {
+                            val mins = customMinutes.toIntOrNull() ?: 0
+                            if (mins > 0) { sleepTimerManager.start(mins) { onStop() }; onDismiss() }
+                        }, colors = ButtonDefaults.buttonColors(containerColor = Purple),
+                            shape = RoundedCornerShape(12.dp), modifier = Modifier.weight(1f), enabled = (customMinutes.toIntOrNull() ?: 0) > 0) {
+                            Text(stringResource(R.string.start))
                         }
                     }
                 } else {
-                    // Presets
                     val presets = listOf(
-                        "10 min" to 10, "20 min" to 20, "30 min" to 30, "45 min" to 45,
-                        "1 uur" to 60, "1,5 uur" to 90, "2 uur" to 120, "3 uur" to 180,
-                        "4 uur" to 240, "6 uur" to 360, "8 uur" to 480, "12 uur" to 720
+                        10 to R.string.sleep_timer_10, 20 to R.string.sleep_timer_20, 30 to R.string.sleep_timer_30,
+                        45 to R.string.sleep_timer_45, 60 to R.string.sleep_timer_60, 90 to R.string.sleep_timer_90,
+                        120 to R.string.sleep_timer_120, 180 to R.string.sleep_timer_180,
+                        240 to R.string.sleep_timer_240, 360 to R.string.sleep_timer_360,
+                        480 to R.string.sleep_timer_480, 720 to R.string.sleep_timer_720
                     )
-                    presets.forEach { (label, mins) ->
-                        TextButton(
-                            onClick = {
-                                sleepTimerManager.start(mins) { onStop() }
-                                onDismiss()
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(label, color = PrimaryText, fontSize = 16.sp)
+                    presets.forEach { (mins, labelRes) ->
+                        TextButton(onClick = { sleepTimerManager.start(mins) { onStop() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(labelRes), color = PrimaryText, fontSize = 16.sp)
                         }
                     }
                     Spacer(Modifier.height(4.dp))
                     TextButton(onClick = { showCustom = true }, modifier = Modifier.fillMaxWidth()) {
-                        Text("⚙️ Aangepaste tijd…", color = Purple, fontSize = 15.sp)
+                        Text("⚙️ ${stringResource(R.string.sleep_timer_custom)}", color = Purple, fontSize = 15.sp)
                     }
                 }
             }
         },
-        confirmButton = {
-            if (!isActive && !showCustom) {
-                TextButton(onClick = onDismiss) { Text("Annuleren", color = SecondaryText) }
-            }
-        }
+        confirmButton = { if (!isActive && !showCustom) TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel), color = SecondaryText) } }
     )
 }
 

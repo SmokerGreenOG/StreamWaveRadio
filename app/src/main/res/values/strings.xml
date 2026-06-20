@@ -1,119 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">StreamWave Radio</string>
-    
-    <!-- Algemeen -->
-    <string name="app_tagline">Jouw radio, jouw stream</string>
-    
-    <!-- Hoofdscherm -->
-    <string name="search_hint">Zoek stations…</string>
-    <string name="now_playing">Nu aan het luisteren</string>
-    <string name="featured_stations">Uitgelichte stations</string>
-    <string name="all_stations">Alle radiostations</string>
-    <string name="my_stations">Mijn stations</string>
-    <string name="recently_played">Recent beluisterd</string>
-    <string name="no_stations">Geen stations gevonden</string>
+    <string name="app_tagline">Your radio, your stream</string>
+    <string name="search_hint">Search stations…</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="featured_stations">Featured Stations</string>
+    <string name="all_stations">All Stations</string>
+    <string name="my_stations">My Stations</string>
+    <string name="recently_played">Recently Played</string>
+    <string name="no_stations">No stations found</string>
     <string name="live">LIVE</string>
-    <string name="official">Officieel</string>
-    <string name="personal_station">Persoonlijk station</string>
-    
-    <!-- Acties -->
-    <string name="play">Afspelen</string>
-    <string name="pause">Pauzeren</string>
-    <string name="stop">Stoppen</string>
-    <string name="favorite">Favoriet</string>
-    <string name="unfavorite">Verwijder uit favorieten</string>
-    <string name="add_station">Persoonlijk station toevoegen</string>
-    <string name="edit">Bewerken</string>
-    <string name="delete">Verwijderen</string>
-    <string name="save">Opslaan</string>
-    <string name="cancel">Annuleren</string>
-    <string name="confirm">Bevestigen</string>
-    <string name="retry">Opnieuw</string>
-    <string name="submit">Insturen</string>
-    
-    <!-- Speler -->
-    <string name="previous_station">Vorig station</string>
-    <string name="next_station">Volgend station</string>
+    <string name="official">Official</string>
+    <string name="personal_station">Personal Station</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="favorite">Favorite</string>
+    <string name="unfavorite">Remove from favorites</string>
+    <string name="add_station">Add station</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="retry">Retry</string>
+    <string name="submit">Submit</string>
+    <string name="previous_station">Previous</string>
+    <string name="next_station">Next</string>
     <string name="volume">Volume</string>
-    <string name="mute">Dempen</string>
-    <string name="open_website">Website openen</string>
-    <string name="share">Delen</string>
-    <string name="sleep_timer">Slaaptimer</string>
-    <string name="reconnecting">Opnieuw verbinden…</string>
-    <string name="reconnect">Opnieuw verbinden</string>
-    
-    <!-- Slaaptimer -->
-    <string name="sleep_timer_10">10 minuten</string>
-    <string name="sleep_timer_20">20 minuten</string>
-    <string name="sleep_timer_30">30 minuten</string>
-    <string name="sleep_timer_45">45 minuten</string>
-    <string name="sleep_timer_60">60 minuten</string>
-    <string name="sleep_timer_90">90 minuten</string>
-    <string name="sleep_timer_custom">Aangepaste tijd</string>
-    <string name="sleep_timer_cancel">Timer annuleren</string>
-    <string name="sleep_timer_remaining">Resterend: %1$d min</string>
-    
-    <!-- Persoonlijk station -->
-    <string name="station_name">Stationsnaam</string>
-    <string name="stream_url">Directe stream-URL</string>
-    <string name="website_url">Website-URL (optioneel)</string>
-    <string name="category">Categorie</string>
-    <string name="description">Beschrijving (optioneel)</string>
-    <string name="test_stream">Stream testen</string>
-    <string name="propose_to_admin">Aan beheerder voorstellen</string>
-    <string name="propose_warning">Je stuurt deze stationsgegevens naar de beheerder ter beoordeling. Het station wordt niet automatisch openbaar geplaatst.</string>
-    
-    <!-- Stream test -->
-    <string name="stream_ok">De stream werkt.</string>
-    <string name="stream_not_audio">Deze link is geen directe audiostream.</string>
-    <string name="stream_no_response">De streamserver reageert niet.</string>
-    <string name="stream_format_unsupported">Dit audioformaat wordt niet ondersteund.</string>
-    <string name="stream_offline">De stream is momenteel offline.</string>
-    <string name="stream_refused">De server heeft de verbinding geweigerd.</string>
-    <string name="stream_invalid_url">De URL is ongeldig.</string>
-    <string name="stream_http_warning">Deze stream gebruikt een onbeveiligde HTTP-verbinding.</string>
-    
-    <!-- Favorieten -->
-    <string name="favorites">Favorieten</string>
-    <string name="no_favorites">Nog geen favorieten</string>
-    
-    <!-- Instellingen -->
-    <string name="settings">Instellingen</string>
-    <string name="language">Taal</string>
+    <string name="mute">Mute</string>
+    <string name="open_website">Open website</string>
+    <string name="share">Share</string>
+    <string name="sleep_timer">Sleep Timer</string>
+    <string name="reconnecting">Reconnecting…</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="full_player">Full Player</string>
+    <string name="sleep_timer_10">10 minutes</string>
+    <string name="sleep_timer_20">20 minutes</string>
+    <string name="sleep_timer_30">30 minutes</string>
+    <string name="sleep_timer_45">45 minutes</string>
+    <string name="sleep_timer_60">60 minutes</string>
+    <string name="sleep_timer_90">90 minutes</string>
+    <string name="sleep_timer_120">2 hours</string>
+    <string name="sleep_timer_180">3 hours</string>
+    <string name="sleep_timer_240">4 hours</string>
+    <string name="sleep_timer_360">6 hours</string>
+    <string name="sleep_timer_480">8 hours</string>
+    <string name="sleep_timer_720">12 hours</string>
+    <string name="sleep_timer_custom">Custom time</string>
+    <string name="sleep_timer_cancel">Cancel timer</string>
+    <string name="sleep_timer_remaining">Remaining: %1$d min</string>
+    <string name="sleep_timer_active">Timer running…</string>
+    <string name="sleep_timer_custom_minutes">Minutes</string>
+    <string name="start">Start</string>
+    <string name="station_name">Station name</string>
+    <string name="stream_url">Stream URL</string>
+    <string name="website_url">Website (optional)</string>
+    <string name="category">Category</string>
+    <string name="description">Description</string>
+    <string name="test_stream">Test stream</string>
+    <string name="propose_to_admin">Propose to admin</string>
+    <string name="propose_warning">You are submitting this station for review. It will not be made public automatically.</string>
+    <string name="stream_ok">Stream is working.</string>
+    <string name="stream_not_audio">Not a direct audio stream.</string>
+    <string name="stream_no_response">Stream server not responding.</string>
+    <string name="stream_format_unsupported">Audio format not supported.</string>
+    <string name="stream_offline">Stream is offline.</string>
+    <string name="stream_refused">Server refused connection.</string>
+    <string name="stream_invalid_url">Invalid URL.</string>
+    <string name="stream_http_warning">Unsecured HTTP connection.</string>
+    <string name="favorites">Favorites</string>
+    <string name="no_favorites">No favorites yet</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
     <string name="language_nl">Nederlands</string>
     <string name="language_en">English</string>
     <string name="language_de">Deutsch</string>
     <string name="language_es">Español</string>
+    <string name="select_language">Select language</string>
     <string name="account">Account</string>
     <string name="privacy">Privacy</string>
-    <string name="about">Over</string>
-    <string name="version">Versie %1$s</string>
-    <string name="made_by">Gemaakt door %1$s</string>
-    
-    <!-- Admin -->
-    <string name="admin_login">Beheerder login</string>
+    <string name="about">About</string>
+    <string name="version">Version %1$s</string>
+    <string name="made_by">Made by %1$s</string>
+    <string name="admin_login">Admin login</string>
     <string name="admin_dashboard">Dashboard</string>
-    <string name="admin_stations">Stations beheren</string>
-    <string name="admin_submissions">Inzendingen</string>
-    <string name="admin_add">Station toevoegen</string>
-    <string name="accept">Accepteren</string>
-    <string name="reject">Afwijzen</string>
-    <string name="more_info">Meer informatie nodig</string>
-    
-    <!-- Foutmeldingen -->
-    <string name="error_no_internet">Geen internetverbinding</string>
-    <string name="error_stream_failed">Stream kan niet worden afgespeeld</string>
-    <string name="error_unknown">Er is een fout opgetreden</string>
-    <string name="offline_mode">Offline modus — gecachte gegevens worden getoond</string>
-    
-    <!-- Filters -->
-    <string name="filter_all">Alles</string>
-    <string name="filter_official">Officiële stations</string>
-    <string name="filter_personal">Mijn stations</string>
-    <string name="filter_featured">Uitgelicht</string>
-    <string name="filter_category">Categorie</string>
-    <string name="filter_country">Land</string>
-    <string name="filter_language">Taal</string>
-    <string name="filter_recent">Recent beluisterd</string>
+    <string name="admin_stations">Manage stations</string>
+    <string name="admin_submissions">Submissions</string>
+    <string name="admin_add">Add station</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
+    <string name="more_info">More info needed</string>
+    <string name="error_no_internet">No internet</string>
+    <string name="error_stream_failed">Stream failed</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="offline_mode">Offline mode</string>
+    <string name="filter_all">All</string>
+    <string name="filter_official">Official</string>
+    <string name="filter_personal">Personal</string>
+    <string name="filter_featured">Featured</string>
+    <string name="filter_category">Category</string>
+    <string name="filter_country">Country</string>
+    <string name="filter_language">Language</string>
+    <string name="filter_recent">Recent</string>
+    <string name="loading">Loading…</string>
+    <string name="save_play">Save &amp; play</string>
+    <string name="testing">Testing…</string>
+    <string name="admin_secured">🔒 Secured admin panel</string>
+    <string name="back">Back</string>
+    <string name="buffering">Buffering…</string>
 </resources>

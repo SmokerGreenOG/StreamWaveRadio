@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,7 +51,7 @@ fun HomeScreen(
                 onClick = onAddPersonalStation,
                 containerColor = Purple, contentColor = PrimaryText,
                 modifier = Modifier.shadow(12.dp, CircleShape, ambientColor = PurpleGlow, spotColor = PurpleGlow)
-            ) { Icon(Icons.Default.Add, "Station toevoegen") }
+            ) { Icon(Icons.Default.Add, stringResource(R.string.add_station)) }
         },
         bottomBar = { MiniPlayer(radioPlayer = viewModel.radioPlayer, onOpenFullPlayer = onOpenFullPlayer) }
     ) { padding ->
@@ -60,32 +61,26 @@ fun HomeScreen(
         ) {
             item { Spacer(Modifier.height(4.dp)) }
 
-            // Header
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.app_logo_small),
-                            contentDescription = "StreamWave Radio",
-                            modifier = Modifier.size(36.dp).clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Fit
-                        )
+                        Image(painter = painterResource(R.drawable.app_logo_small), contentDescription = "StreamWave Radio",
+                            modifier = Modifier.size(36.dp).clip(RoundedCornerShape(8.dp)), contentScale = ContentScale.Fit)
                         Spacer(Modifier.width(8.dp))
-                        Text("StreamWave Radio", color = PrimaryText, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.app_name), color = PrimaryText, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                     }
                     Row {
-                        IconButton(onClick = onOpenFavorites) { Icon(Icons.Default.Favorite, "Favorieten", tint = Pink) }
-                        IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, "Instellingen", tint = SecondaryText) }
+                        IconButton(onClick = onOpenFavorites) { Icon(Icons.Default.Favorite, stringResource(R.string.favorites), tint = Pink) }
+                        IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, stringResource(R.string.settings), tint = SecondaryText) }
                     }
                 }
             }
 
-            item { SearchBar(query = searchQuery, onQueryChange = { viewModel.onSearch(it) }) }
+            item { SearchBar(query = searchQuery, onQueryChange = { viewModel.onSearch(it) }, placeholder = stringResource(R.string.search_hint)) }
 
-            // Now Playing
             if (playerState.stationName.isNotEmpty()) {
                 item {
-                    SectionTitle("Nu aan het luisteren")
+                    SectionTitle(stringResource(R.string.now_playing))
                     GlowCard(onClick = {}, glowColor = PinkGlow) {
                         Column(Modifier.padding(14.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -107,58 +102,29 @@ fun HomeScreen(
                                     AudioBars(isPlaying = playerState.state == PlayingState.PLAYING)
                                 }
                             }
-
                             Spacer(Modifier.height(10.dp))
-
-                            // Controls: play/pauze + stop + volume
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                // Play/Pauze
-                                FilledIconButton(
-                                    onClick = {
-                                        if (playerState.state == PlayingState.PLAYING) viewModel.radioPlayer.pause()
-                                        else viewModel.radioPlayer.resume()
-                                    },
-                                    modifier = Modifier.size(42.dp),
-                                    shape = CircleShape,
-                                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = Purple)
-                                ) {
-                                    Icon(
-                                        if (playerState.state == PlayingState.PLAYING) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                        "Play/Pause", modifier = Modifier.size(22.dp)
-                                    )
+                                FilledIconButton(onClick = {
+                                    if (playerState.state == PlayingState.PLAYING) viewModel.radioPlayer.pause()
+                                    else viewModel.radioPlayer.resume()
+                                }, modifier = Modifier.size(42.dp), shape = CircleShape,
+                                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = Purple)) {
+                                    Icon(if (playerState.state == PlayingState.PLAYING) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                        stringResource(if (playerState.state == PlayingState.PLAYING) R.string.pause else R.string.play), modifier = Modifier.size(22.dp))
                                 }
-
-                                // Stop
                                 IconButton(onClick = { viewModel.radioPlayer.stop() }) {
-                                    Icon(Icons.Default.Stop, "Stop", tint = ErrorRed, modifier = Modifier.size(26.dp))
+                                    Icon(Icons.Default.Stop, stringResource(R.string.stop), tint = ErrorRed, modifier = Modifier.size(26.dp))
                                 }
-
                                 Spacer(Modifier.width(4.dp))
-
-                                // Volume
-                                Icon(
-                                    if (playerState.isMuted) Icons.Filled.VolumeOff
-                                    else if (playerState.volume > 0.6f) Icons.Filled.VolumeUp
-                                    else Icons.Filled.VolumeDown,
-                                    "Volume", tint = SecondaryText, modifier = Modifier.size(18.dp)
-                                )
-                                Slider(
-                                    value = playerState.volume,
-                                    onValueChange = { viewModel.radioPlayer.setVolume(it) },
-                                    modifier = Modifier.weight(1f),
-                                    valueRange = 0f..2f,
-                                    colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple, inactiveTrackColor = GlassBorder)
-                                )
+                                Slider(value = playerState.volume, onValueChange = { viewModel.radioPlayer.setVolume(it) },
+                                    modifier = Modifier.weight(1f), valueRange = 0f..2f,
+                                    colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple, inactiveTrackColor = GlassBorder))
                                 Text("${(playerState.volume * 100).toInt()}%", color = SecondaryText, fontSize = 11.sp)
-
-                                // Open full player
                                 IconButton(onClick = onOpenFullPlayer) {
-                                    Icon(Icons.Default.OpenInFull, "Volledige speler", tint = SecondaryText, modifier = Modifier.size(20.dp))
+                                    Icon(Icons.Default.OpenInFull, stringResource(R.string.full_player), tint = SecondaryText, modifier = Modifier.size(20.dp))
                                 }
-
-                                // Slaaptimer
                                 IconButton(onClick = { viewModel.setShowSleepTimer(true) }) {
-                                    Icon(Icons.Filled.Bedtime, "Slaaptimer", tint = Cyan, modifier = Modifier.size(20.dp))
+                                    Icon(Icons.Filled.Bedtime, stringResource(R.string.sleep_timer), tint = Cyan, modifier = Modifier.size(20.dp))
                                 }
                             }
                         }
@@ -166,9 +132,8 @@ fun HomeScreen(
                 }
             }
 
-            // Featured
             if (featured.isNotEmpty()) {
-                item { SectionTitle("⭐ Uitgelichte stations") }
+                item { SectionTitle("⭐ ${stringResource(R.string.featured_stations)}") }
                 item {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(featured, key = { it.id }) { station ->
@@ -179,15 +144,11 @@ fun HomeScreen(
                 }
             }
 
-            // All Stations
-            item { SectionTitle("📻 Alle radiostations") }
+            item { SectionTitle("📻 ${stringResource(R.string.all_stations)}") }
 
             if (stations.isEmpty()) {
-                item {
-                    Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
-                        Text("Stations laden…", color = SecondaryText)
-                    }
-                }
+                item { Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
+                    Text(stringResource(R.string.no_stations), color = SecondaryText) } }
             }
 
             items(stations, key = { it.id }) { station ->
@@ -217,8 +178,7 @@ fun SectionTitle(title: String) {
 @Composable
 fun StationListItem(name: String, logoUrl: String, description: String, onClick: () -> Unit) {
     Surface(onClick = onClick, modifier = Modifier.fillMaxWidth().shadow(4.dp, RoundedCornerShape(14.dp), ambientColor = PurpleGlow),
-        shape = RoundedCornerShape(14.dp), color = Card
-    ) {
+        shape = RoundedCornerShape(14.dp), color = Card) {
         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             if (logoUrl.isNotEmpty())
                 AsyncImage(model = logoUrl, contentDescription = null, modifier = Modifier.size(44.dp).clip(RoundedCornerShape(10.dp)), contentScale = ContentScale.Crop)
@@ -228,7 +188,7 @@ fun StationListItem(name: String, logoUrl: String, description: String, onClick:
                 Text(name, color = PrimaryText, fontWeight = FontWeight.Medium, fontSize = 14.sp)
                 if (description.isNotEmpty()) Text(description, color = SecondaryText, fontSize = 11.sp, maxLines = 1)
             }
-            Icon(Icons.Default.PlayArrow, "Afspelen", tint = Purple, modifier = Modifier.size(22.dp))
+            Icon(Icons.Default.PlayArrow, stringResource(R.string.play), tint = Purple, modifier = Modifier.size(22.dp))
         }
     }
 }
