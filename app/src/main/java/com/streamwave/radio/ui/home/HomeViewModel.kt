@@ -32,43 +32,50 @@ class HomeViewModel @Inject constructor(
     private val _showSleepTimer = MutableStateFlow(false)
     val showSleepTimer: StateFlow<Boolean> = _showSleepTimer.asStateFlow()
 
+    private val _currentStationId = MutableStateFlow<Long?>(null)
+    val currentStationId: StateFlow<Long?> = _currentStationId.asStateFlow()
+
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite.asStateFlow()
+
     fun setShowSleepTimer(show: Boolean) { _showSleepTimer.value = show }
 
     init {
-        // Laad stations direct bij opstarten
-        viewModelScope.launch {
-            stationRepository.getOfficialStations().collect { stations ->
-                _officialStations.value = stations
-            }
-        }
-        viewModelScope.launch {
-            stationRepository.getFeaturedStations().collect { featured ->
-                _featuredStations.value = featured
-            }
-        }
+        viewModelScope.launch { stationRepository.getOfficialStations().collect { _officialStations.value = it } }
+        viewModelScope.launch { stationRepository.getFeaturedStations().collect { _featuredStations.value = it } }
     }
 
     fun onSearch(query: String) {
         _searchQuery.value = query
-        if (query.isBlank()) {
-            viewModelScope.launch {
-                stationRepository.getOfficialStations().collect { stations ->
-                    _officialStations.value = stations
-                }
-            }
-        } else {
-            viewModelScope.launch {
-                stationRepository.searchStations(query).collect { stations ->
-                    _officialStations.value = stations
-                }
-            }
+        viewModelScope.launch {
+            if (query.isBlank()) stationRepository.getOfficialStations().collect { _officialStations.value = it }
+            else stationRepository.searchStations(query).collect { _officialStations.value = it }
         }
     }
 
     fun playStation(station: OfficialStationEntity) {
-        viewModelScope.launch {
-            recentStationRepository.addRecent("OFFICIAL", station.id)
-        }
+        viewModelScope.launch { recentStationRepository.addRecent("OFFICIAL", station.id) }
+        _currentStationId.value = station.id
+        // Check of dit station favoriet is
+        viewModelScope.launch { _isFavorite.value = favoriteRepository.isFavorite("OFFICIAL", station.id) }
         radioPlayer.play(station.streamUrl, station.name, station.logoUrl)
+    }
+
+    fun toggleFavorite() {
+        val stationId = _currentStationId.value ?: return
+        viewModelScope.launch {
+            favoriteRepository.toggle("OFFICIAL", stationId)
+            _isFavorite.value = !_isFavorite.value
+        }
+    }
+
+    fun getFavorites(): StateFlow<List<Long>> {
+        val ids = MutableStateFlow<List<Long>>(emptyList())
+        viewModelScope.launch {
+            favoriteRepository.getAll().collect { favs ->
+                ids.value = favs.filter { it.stationType == "OFFICIAL" }.map { it.stationId }
+            }
+        }
+        return ids.asStateFlow()
     }
 }

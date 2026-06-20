@@ -43,6 +43,7 @@ fun HomeScreen(
     val featured by viewModel.featuredStations.collectAsState()
     val playerState by viewModel.radioPlayer.playerState.collectAsState()
     val showSleepTimer by viewModel.showSleepTimer.collectAsState()
+    val isFav by viewModel.isFavorite.collectAsState()
 
     val isPlaying = playerState.state == PlayingState.PLAYING
     val isBuffering = playerState.state == PlayingState.BUFFERING
@@ -141,6 +142,13 @@ fun HomeScreen(
                                     colors = SliderDefaults.colors(thumbColor = Purple, activeTrackColor = Purple, inactiveTrackColor = GlassBorder)
                                 )
                                 Spacer(Modifier.width(4.dp))
+                                // Favoriet
+                                IconButton(onClick = { viewModel.toggleFavorite() }, modifier = Modifier.size(36.dp)) {
+                                    Icon(
+                                        if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                        stringResource(R.string.favorite), tint = if (isFav) Pink else SecondaryText, modifier = Modifier.size(22.dp)
+                                    )
+                                }
                                 // Slaaptimer
                                 IconButton(onClick = { viewModel.setShowSleepTimer(true) }, modifier = Modifier.size(36.dp)) {
                                     Icon(Icons.Filled.Bedtime, stringResource(R.string.sleep_timer), tint = Cyan, modifier = Modifier.size(20.dp))
