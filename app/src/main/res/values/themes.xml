@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.StreamWaveRadio" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#FF140B24</item>
+        <item name="android:navigationBarColor">#FF140B24</item>
+        <item name="android:windowBackground">#FF140B24</item>
+    </style>
+</resources>

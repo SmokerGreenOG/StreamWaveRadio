@@ -1,0 +1,25 @@
+# Built files
+/build/
+/app/build/
+*.apk
+*.aab
+*.dex
+
+# IDE
+.idea/
+*.iml
+.gradle/
+local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hermes
+.hermes/
+
+# Gradle wrapper (generated)
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
