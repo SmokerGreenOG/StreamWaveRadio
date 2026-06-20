@@ -52,8 +52,13 @@ class PrepopulateCallback : androidx.room.RoomDatabase.Callback() {
 
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
-        CoroutineScope(Dispatchers.IO).launch {
-            prepopulateDatabase(db)
+        // Synchrone prepopulatie via runBlocking — data is direct beschikbaar
+        kotlinx.coroutines.runBlocking {
+            with(kotlinx.coroutines.Dispatchers.IO) {
+                kotlinx.coroutines.withContext(this) {
+                    try { prepopulateDatabase(db) } catch (_: Exception) {}
+                }
+            }
         }
     }
 

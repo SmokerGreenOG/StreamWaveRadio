@@ -8,7 +8,6 @@ import com.streamwave.radio.data.repository.RecentStationRepository
 import com.streamwave.radio.data.repository.StationRepository
 import com.streamwave.radio.player.RadioPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,22 +23,42 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val officialStations: StateFlow<List<OfficialStationEntity>> = _searchQuery
-        .flatMapLatest { query ->
-            if (query.isBlank()) stationRepository.getOfficialStations()
-            else stationRepository.searchStations(query)
+    private val _officialStations = MutableStateFlow<List<OfficialStationEntity>>(emptyList())
+    val officialStations: StateFlow<List<OfficialStationEntity>> = _officialStations.asStateFlow()
+
+    private val _featuredStations = MutableStateFlow<List<OfficialStationEntity>>(emptyList())
+    val featuredStations: StateFlow<List<OfficialStationEntity>> = _featuredStations.asStateFlow()
+
+    init {
+        // Laad stations direct bij opstarten
+        viewModelScope.launch {
+            stationRepository.getOfficialStations().collect { stations ->
+                _officialStations.value = stations
+            }
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        viewModelScope.launch {
+            stationRepository.getFeaturedStations().collect { featured ->
+                _featuredStations.value = featured
+            }
+        }
+    }
 
-    val featuredStations: StateFlow<List<OfficialStationEntity>> =
-        stationRepository.getFeaturedStations()
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    val recentStations = recentStationRepository.getRecent(10)
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    fun onSearch(query: String) { _searchQuery.value = query }
+    fun onSearch(query: String) {
+        _searchQuery.value = query
+        if (query.isBlank()) {
+            viewModelScope.launch {
+                stationRepository.getOfficialStations().collect { stations ->
+                    _officialStations.value = stations
+                }
+            }
+        } else {
+            viewModelScope.launch {
+                stationRepository.searchStations(query).collect { stations ->
+                    _officialStations.value = stations
+                }
+            }
+        }
+    }
 
     fun playStation(station: OfficialStationEntity) {
         viewModelScope.launch {
