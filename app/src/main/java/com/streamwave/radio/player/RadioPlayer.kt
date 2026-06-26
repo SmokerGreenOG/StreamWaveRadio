@@ -40,11 +40,17 @@ class RadioPlayer @Inject constructor(
         .setMediaSourceFactory(DefaultMediaSourceFactory(context))
         .build()
 
+    var onNotificationUpdate: (() -> Unit)? = null
+
     private val _playerState = MutableStateFlow(PlayerState())
     val playerState: StateFlow<PlayerState> = _playerState.asStateFlow()
 
     private var retryCount = 0
     private val maxRetries = 5
+
+    private fun notifyUpdate() {
+        onNotificationUpdate?.invoke()
+    }
 
     init {
         exoPlayer.addListener(object : Player.Listener {
@@ -57,6 +63,7 @@ class RadioPlayer @Inject constructor(
                     else -> PlayingState.IDLE
                 }
                 _playerState.value = _playerState.value.copy(state = mapped)
+                notifyUpdate()
             }
 
             override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
@@ -69,6 +76,7 @@ class RadioPlayer @Inject constructor(
                         state = PlayingState.ERROR,
                         error = error.localizedMessage ?: "Stream cannot be played"
                     )
+                    notifyUpdate()
                 }
             }
 
@@ -82,6 +90,7 @@ class RadioPlayer @Inject constructor(
                         title = title,
                         albumArt = albumArt
                     )
+                    notifyUpdate()
                 }
             }
         })
@@ -106,9 +115,19 @@ class RadioPlayer @Inject constructor(
             error = null,
             state = PlayingState.BUFFERING
         )
+        notifyUpdate()
         val mediaItem = MediaItem.Builder()
             .setUri(streamUrl)
             .setMediaId(stationName)
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setTitle(stationName)
+                    .setDisplayTitle(stationName)
+                    .setArtist(null)
+                    .setIsPlayable(true)
+                    .setIsBrowsable(false)
+                    .build()
+            )
             .build()
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
@@ -118,16 +137,19 @@ class RadioPlayer @Inject constructor(
     fun pause() {
         exoPlayer.playWhenReady = false
         _playerState.value = _playerState.value.copy(state = PlayingState.PAUSED)
+        notifyUpdate()
     }
 
     fun resume() {
         exoPlayer.playWhenReady = true
+        notifyUpdate()
     }
 
     fun stop() {
         exoPlayer.stop()
         exoPlayer.clearMediaItems()
         _playerState.value = PlayerState()
+        notifyUpdate()
     }
 
     fun setVolume(volume: Float) {

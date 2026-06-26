@@ -8,6 +8,7 @@ import com.streamwave.radio.data.repository.RecentStationRepository
 import com.streamwave.radio.data.repository.StationRepository
 import com.streamwave.radio.player.RadioPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,21 +48,27 @@ class HomeViewModel @Inject constructor(
     fun personalStationDao() = personalStationDao
 
     init {
-        viewModelScope.launch { stationRepository.getOfficialStations().collect { _officialStations.value = it } }
         viewModelScope.launch { stationRepository.getFeaturedStations().collect { _featuredStations.value = it } }
         // Toon reclame na 60 seconden
         viewModelScope.launch {
             kotlinx.coroutines.delay(60_000L)
             _showAd.value = true
         }
+        // Stations zoeken met flatMapLatest — slechts 1 collect actief,
+        // vorige wordt gecanceld bij nieuwe zoekopdracht → geen geflikker
+        @OptIn(ExperimentalCoroutinesApi::class)
+        viewModelScope.launch {
+            _searchQuery
+                .flatMapLatest { query ->
+                    if (query.isBlank()) stationRepository.getOfficialStations()
+                    else stationRepository.searchStations(query)
+                }
+                .collect { _officialStations.value = it }
+        }
     }
 
     fun onSearch(query: String) {
         _searchQuery.value = query
-        viewModelScope.launch {
-            if (query.isBlank()) stationRepository.getOfficialStations().collect { _officialStations.value = it }
-            else stationRepository.searchStations(query).collect { _officialStations.value = it }
-        }
     }
 
     fun playStation(station: OfficialStationEntity) {
